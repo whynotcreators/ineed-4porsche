@@ -249,6 +249,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
     <div class="nav-item" onclick="showPanel('tareas')"><div class="nav-dot nd-y"></div>Tareas</div>
     <div class="nav-item" onclick="showPanel('roadmap')"><div class="nav-dot nd-g"></div>Roadmap</div>
     <div class="nav-item" onclick="showPanel('proveedores')"><div class="nav-dot nd-b"></div>Proveedores</div>
+    <div class="nav-item" onclick="showPanel('contactos')"><div class="nav-dot" style="background:#4db6ac;"></div>Contactos</div>
     <div class="nav-section">Config</div>
     <div class="nav-item" onclick="showPanel('config')"><div class="nav-dot" style="background:var(--text3);"></div>Responsables</div>
   </div>
@@ -411,6 +412,27 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
         <div id="pw-msg" style="font-size:12px;margin-top:10px;font-family:var(--mono);min-height:18px;"></div>
       </div>
     </div>
+  </div>
+
+  <!-- CONTACTOS -->
+  <div class="panel" id="contactos">
+    <div class="panel-header">
+      <div><div class="panel-title">Contactos</div><div class="panel-sub">Personas clave del proyecto — proveedores, socios, referidos</div></div>
+      <button class="btn primary" onclick="openModal('contacto')">+ Nuevo contacto</button>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="mc-label">Total contactos</div><div class="mc-val" id="c-total">—</div><div class="mc-sub" id="c-empresas">—</div></div>
+      <div class="metric-card"><div class="mc-label">Vinculados a proveedor</div><div class="mc-val blue" id="c-provs">—</div><div class="mc-sub">contacto directo</div></div>
+      <div class="metric-card"><div class="mc-label">Vinculados a destino</div><div class="mc-val orange" id="c-dests">—</div><div class="mc-sub">por ubicación</div></div>
+      <div class="metric-card"><div class="mc-label">Sin vincular</div><div class="mc-val" id="c-free">—</div><div class="mc-sub">generales</div></div>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterContactos('todos',this)">Todos</button>
+      <button class="filter-btn" onclick="filterContactos('proveedor',this)">Proveedores</button>
+      <button class="filter-btn" onclick="filterContactos('destino',this)">Destinos</button>
+      <button class="filter-btn" onclick="filterContactos('general',this)">Generales</button>
+    </div>
+    <div id="contactos-list"></div>
   </div>
 
 </div>
@@ -593,6 +615,34 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
   </div>
 </div>
 
+<!-- MODAL CONTACTO -->
+<div class="modal-overlay" id="modal-contacto">
+  <div class="modal">
+    <div class="modal-title" id="modal-contacto-title">Nuevo contacto</div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Nombre</label><input class="form-input" id="co-nombre" placeholder="ej: Li Wei"></div>
+      <div class="form-row"><label class="form-label">Empresa</label><input class="form-input" id="co-empresa" placeholder="ej: Guangzhou LatexTech"></div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Email</label><input class="form-input" type="email" id="co-email" placeholder="ej: li@latextech.com"></div>
+      <div class="form-row"><label class="form-label">WhatsApp / Tel</label><input class="form-input" id="co-tel" placeholder="ej: +86 138 0013 8000"></div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Vincular a proveedor</label>
+        <select class="form-select" id="co-proveedor"><option value="">— ninguno —</option></select>
+      </div>
+      <div class="form-row"><label class="form-label">Vincular a destino</label>
+        <select class="form-select" id="co-destino"><option value="">— ninguno —</option></select>
+      </div>
+    </div>
+    <div class="form-row"><label class="form-label">Notas</label><textarea class="form-textarea" id="co-notas" placeholder="Cómo se conocieron, qué rol tiene, observaciones..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('contacto')">Cancelar</button>
+      <button class="btn primary" onclick="saveContacto()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM -->
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal" style="width:360px;">
@@ -655,14 +705,15 @@ function showError(msg){ showLoading('⚠ '+msg); setTimeout(hideLoading,3000); 
 async function loadAll(){
   showLoading('Cargando datos...');
   try {
-    const [viajes, aloj, tareas, provs, fases, hitos, resps] = await Promise.all([
+    const [viajes, aloj, tareas, provs, fases, hitos, resps, contactos] = await Promise.all([
       sbGet('viajes','order=created_at.asc'),
       sbGet('alojamientos','order=checkin.asc'),
       sbGet('tareas','order=created_at.asc'),
       sbGet('proveedores','order=created_at.asc'),
       sbGet('roadmap','order=orden.asc'),
       sbGet('hitos','order=created_at.asc'),
-      sbGet('responsables','order=created_at.asc')
+      sbGet('responsables','order=created_at.asc'),
+      sbGet('contactos','order=created_at.asc')
     ]);
     data.viajes = viajes;
     data.alojamientos = aloj;
@@ -670,6 +721,7 @@ async function loadAll(){
     data.proveedores = provs;
     data.roadmap = fases.map(f=>({ ...f, name:f.nombre, hitos: hitos.filter(h=>h.fase_id===f.id).map(h=>({id:h.id,l:h.label,r:h.responsable,e:h.estado})) }));
     data.responsables = resps;
+    data.contactos = contactos;
     hideLoading();
     renderAll();
   } catch(e){
@@ -703,7 +755,7 @@ function showPanel(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const labels={dashboard:'Dashboard',viajes:'Destinos y vuelos',alojamientos:'Alojamientos',tareas:'Tareas',roadmap:'Roadmap',proveedores:'Proveedores',config:'Responsables'};
+  const labels={dashboard:'Dashboard',viajes:'Destinos y vuelos',alojamientos:'Alojamientos',tareas:'Tareas',roadmap:'Roadmap',proveedores:'Proveedores',contactos:'Contactos',config:'Responsables'};
   document.querySelectorAll('.nav-item').forEach(item=>{ if(item.textContent.trim()===labels[id]) item.classList.add('active'); });
   document.querySelector('.main').scrollTop=0;
   renderAll();
@@ -797,6 +849,7 @@ async function confirmDelete(){
     if(type==='aloj') await sbDelete('alojamientos', id);
     if(type==='tarea') await sbDelete('tareas', id);
     if(type==='proveedor') await sbDelete('proveedores', id);
+    if(type==='contacto') await sbDelete('contactos', id);
     if(type==='fase'){
       await fetch(`${SB_URL}/rest/v1/hitos?fase_id=eq.${id}`, { method:'DELETE', headers: sbHeaders });
       await sbDelete('roadmap', id);
@@ -1433,15 +1486,108 @@ function respPill(nombre){
   return `<span class="resp-pill" style="background:${bg};color:${r.color};border-color:${r.color}44;"><span class="resp-pill-dot" style="background:${r.color};"></span>${r.nombre}</span>`;
 }
 
-// openModal wrapper para resp
+// openModal wrapper para resp, gasto y contacto
 const _origOpenModal = openModal;
 function openModal(type, id=null){
   if(type==='resp'){ editingId=id; openModal_resp_extra(id); return; }
+  if(type==='contacto'){ openModalContacto(id); return; }
   _origOpenModal(type, id);
 }
 
 // ─── RENDER ALL ───────────────────────────────────────────────
-function renderAll(){ renderDashboard(); renderViajes(); renderAlojamientos(); renderTareas(); renderRoadmap(); renderProveedores(); renderConfig(); updateRespSelects(); }
+function renderAll(){ renderDashboard(); renderViajes(); renderAlojamientos(); renderTareas(); renderRoadmap(); renderProveedores(); renderContactos(); renderConfig(); updateRespSelects(); }
+
+// ─── CONTACTOS ────────────────────────────────────────────────
+let contactosFilter = 'todos';
+
+function filterContactos(f, btn){
+  contactosFilter = f;
+  document.querySelectorAll('#contactos .filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderContactos();
+}
+
+function openModalContacto(id=null){
+  editingId=id; editingType='contacto';
+  document.getElementById('modal-contacto-title').textContent = id ? 'Editar contacto' : 'Nuevo contacto';
+  const c = id ? data.contactos.find(x=>x.id===id) : {};
+  document.getElementById('co-nombre').value = c.nombre||'';
+  document.getElementById('co-empresa').value = c.empresa||'';
+  document.getElementById('co-email').value = c.email||'';
+  document.getElementById('co-tel').value = c.tel||'';
+  document.getElementById('co-notas').value = c.notas||'';
+  // populate selects
+  const pSel = document.getElementById('co-proveedor');
+  pSel.innerHTML = '<option value="">— ninguno —</option>' + data.proveedores.map(p=>`<option value="${p.id}" ${p.id===c.proveedor_id?'selected':''}>${p.nombre}</option>`).join('');
+  const dSel = document.getElementById('co-destino');
+  dSel.innerHTML = '<option value="">— ninguno —</option>' + data.viajes.map(v=>`<option value="${v.id}" ${v.id===c.destino_id?'selected':''}>${v.nombre.split('—')[0].trim()}</option>`).join('');
+  document.getElementById('modal-contacto').classList.add('open');
+}
+
+async function saveContacto(){
+  const obj = { nombre:document.getElementById('co-nombre').value, empresa:document.getElementById('co-empresa').value, email:document.getElementById('co-email').value, tel:document.getElementById('co-tel').value, notas:document.getElementById('co-notas').value, proveedor_id:parseInt(document.getElementById('co-proveedor').value)||null, destino_id:parseInt(document.getElementById('co-destino').value)||null };
+  showLoading('Guardando...');
+  try {
+    if(editingId) await sbUpdate('contactos', editingId, obj);
+    else await sbInsert('contactos', obj);
+    closeModal('contacto'); await loadAll();
+  } catch(e){ showError('Error: '+e.message); }
+}
+
+function renderContactos(){
+  const list = document.getElementById('contactos-list'); if(!list) return;
+  const cs = data.contactos||[];
+  const conProvs = cs.filter(c=>c.proveedor_id).length;
+  const conDests = cs.filter(c=>c.destino_id&&!c.proveedor_id).length;
+  const libres = cs.filter(c=>!c.proveedor_id&&!c.destino_id).length;
+  const empresas = [...new Set(cs.map(c=>c.empresa).filter(Boolean))];
+  if(document.getElementById('c-total')) document.getElementById('c-total').textContent = cs.length;
+  if(document.getElementById('c-empresas')) document.getElementById('c-empresas').textContent = empresas.length+' empresas';
+  if(document.getElementById('c-provs')) document.getElementById('c-provs').textContent = conProvs;
+  if(document.getElementById('c-dests')) document.getElementById('c-dests').textContent = conDests;
+  if(document.getElementById('c-free')) document.getElementById('c-free').textContent = libres;
+
+  let filtered = cs;
+  if(contactosFilter==='proveedor') filtered = cs.filter(c=>c.proveedor_id);
+  if(contactosFilter==='destino') filtered = cs.filter(c=>c.destino_id&&!c.proveedor_id);
+  if(contactosFilter==='general') filtered = cs.filter(c=>!c.proveedor_id&&!c.destino_id);
+
+  if(!filtered.length){ list.innerHTML='<div class="empty-state"><p>No hay contactos. Agregá uno con "+ Nuevo contacto".</p></div>'; return; }
+
+  list.innerHTML = filtered.map(c=>{
+    const did='ddc'+c.id;
+    const prov = c.proveedor_id ? data.proveedores.find(p=>p.id===c.proveedor_id) : null;
+    const dest = c.destino_id ? data.viajes.find(v=>v.id===c.destino_id) : null;
+    const initials = c.nombre ? c.nombre.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : '??';
+    return `
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(77,182,172,.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#4db6ac;flex-shrink:0;">${initials}</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="font-size:14px;font-weight:500;color:var(--text);">${c.nombre||'—'}</span>
+            ${c.empresa?`<span style="font-family:var(--mono);font-size:10px;color:var(--text3);">${c.empresa}</span>`:''}
+            ${prov?`<span style="font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(100,181,246,.1);color:var(--blue);border:1px solid rgba(100,181,246,.15);">${prov.flag} ${prov.nombre.split(' ')[0]}</span>`:''}
+            ${dest?`<span style="font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(255,112,67,.1);color:var(--orange);border:1px solid rgba(255,112,67,.15);">${dest.flag} ${dest.nombre.split(',')[0].split('—')[0].trim()}</span>`:''}
+          </div>
+          <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;">
+            ${c.email?`<a href="mailto:${c.email}" style="font-size:12px;color:var(--blue);text-decoration:none;">✉ ${c.email}</a>`:''}
+            ${c.tel?`<a href="https://wa.me/${c.tel.replace(/\D/g,'')}" target="_blank" style="font-size:12px;color:var(--green);text-decoration:none;">💬 ${c.tel}</a>`:''}
+          </div>
+          ${c.notas?`<div style="font-size:12px;color:var(--text3);margin-top:6px;line-height:1.5;">${c.notas}</div>`:''}
+        </div>
+        <div class="action-menu">
+          <button class="action-btn" onclick="toggleDD('${did}',event)">⋯</button>
+          <div class="dropdown" id="${did}">
+            <div class="dd-item" onclick="openModalContacto(${c.id});closeAllDD()">✏️ Editar</div>
+            <div class="dd-sep"></div>
+            <div class="dd-item red" onclick="openDel('contacto',${c.id},'¿Eliminar a ${c.nombre}?')">🗑 Eliminar</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
 </script>
 </body>
