@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WHYnot · Bali 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a1a0e; --bg2:#111f14; --bg3:#162019;
+  --card:#1a2a1d; --card2:#1f3023;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --lime:#c8f060; --lime2:#a8d040;
+  --orange:#ff7043; --blue:#64b5f6; --purple:#b39ddb;
+  --green:#66bb6a; --yellow:#ffd54f; --red:#ef5350;
+  --text:#e8f0e0; --text2:#8a9e80; --text3:#5a7050;
+  --mono:'DM Mono',monospace; --sans:'Plus Jakarta Sans',sans-serif; --serif:'Fraunces',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;}
+
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;height:100vh;position:fixed;left:0;top:0;}
+.logo-area{padding:24px 20px 20px;border-bottom:1px solid var(--border);}
+.logo-main{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--lime);}
+.logo-sub{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:3px;letter-spacing:1px;text-transform:uppercase;}
+.nav{padding:16px 0;flex:1;overflow-y:auto;}
+.nav-section{font-family:var(--mono);font-size:9px;color:var(--text3);padding:0 20px;margin:14px 0 6px;text-transform:uppercase;letter-spacing:1.5px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;border-left:2px solid transparent;user-select:none;}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+.nav-item.active{color:var(--lime);background:rgba(200,240,96,0.07);border-left-color:var(--lime);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;}
+.nav-item.active .nav-dot{background:var(--lime);}
+.nd-o{background:var(--orange)!important;} .nd-b{background:var(--blue)!important;} .nd-p{background:var(--purple)!important;} .nd-g{background:var(--green)!important;} .nd-y{background:var(--yellow)!important;} .nd-pi{background:#f48fb1!important;}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);}
+.av-row{display:flex;align-items:center;gap:10px;}
+.av-c{width:28px;height:28px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--bg);}
+.av-n{font-size:12px;color:var(--text2);}
+
+.main{margin-left:220px;flex:1;height:100vh;overflow-y:auto;padding:32px;}
+.panel{display:none;} .panel.active{display:block;}
+.panel-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;}
+.panel-title{font-family:var(--serif);font-size:28px;font-weight:300;color:var(--text);}
+.panel-sub{font-size:13px;color:var(--text2);margin-top:4px;}
+.panel-tag{font-family:var(--mono);font-size:11px;background:rgba(200,240,96,0.1);color:var(--lime);padding:4px 12px;border-radius:20px;border:1px solid rgba(200,240,96,0.2);white-space:nowrap;}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.mc-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.mc-val{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--text);}
+.mc-val.lime{color:var(--lime);} .mc-val.orange{color:var(--orange);} .mc-val.blue{color:var(--blue);} .mc-val.green{color:var(--green);}
+.mc-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.card-title{font-size:13px;font-weight:500;color:var(--text);}
+
+.badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.b-ok{background:rgba(102,187,106,.15);color:var(--green);border:1px solid rgba(102,187,106,.25);}
+.b-pend{background:rgba(255,112,67,.12);color:var(--orange);border:1px solid rgba(255,112,67,.2);}
+.b-no{background:rgba(255,255,255,.04);color:var(--text3);border:1px solid var(--border);}
+.b-curso{background:rgba(100,181,246,.12);color:var(--blue);border:1px solid rgba(100,181,246,.2);}
+
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sdot.green{background:var(--green);} .sdot.orange{background:var(--orange);} .sdot.gray{background:var(--text3);}
+
+.prog-track{background:rgba(255,255,255,.06);border-radius:4px;height:5px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+
+.row-item{display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border);transition:background .1s;}
+.row-item:last-child{border-bottom:none;}
+.row-item:hover{background:rgba(255,255,255,.02);}
+
+.btn{font-family:var(--mono);font-size:11px;padding:7px 16px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;}
+.btn:hover{color:var(--text);border-color:var(--lime);background:rgba(200,240,96,.05);}
+.btn.primary{background:var(--lime);color:var(--bg);border-color:var(--lime);font-weight:500;}
+.btn.primary:hover{background:var(--lime2);}
+.btn.danger{border-color:rgba(239,83,80,.3);color:var(--red);}
+.btn.danger:hover{background:rgba(239,83,80,.1);}
+
+.filter-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.filter-btn{font-family:var(--mono);font-size:11px;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;}
+.filter-btn:hover{border-color:var(--border2);color:var(--text);}
+.filter-btn.active{background:rgba(200,240,96,.1);color:var(--lime);border-color:rgba(200,240,96,.3);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:#1a2a1d;border:1px solid var(--border2);border-radius:16px;padding:28px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--text);margin-bottom:20px;}
+.form-row{margin-bottom:16px;}
+.form-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;display:block;}
+.form-input,.form-select,.form-textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none;transition:border .15s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--lime);}
+.form-select option{background:#1a2a1d;color:var(--text);}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;}
+
+/* DROPDOWN */
+.action-menu{position:relative;display:inline-flex;}
+.action-btn{background:transparent;border:none;color:var(--text3);cursor:pointer;padding:4px 8px;border-radius:6px;font-size:18px;line-height:1;transition:all .15s;}
+.action-btn:hover{color:var(--text);background:rgba(255,255,255,.06);}
+.dropdown{position:absolute;right:0;top:100%;background:#1f3023;border:1px solid var(--border2);border-radius:10px;padding:4px;min-width:150px;z-index:200;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.dropdown.open{display:block;}
+.dd-item{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;color:var(--text2);cursor:pointer;border-radius:6px;transition:all .15s;}
+.dd-item:hover{background:rgba(255,255,255,.05);color:var(--text);}
+.dd-item.red{color:var(--red);}
+.dd-item.red:hover{background:rgba(239,83,80,.1);}
+.dd-sep{height:1px;background:var(--border);margin:4px 0;}
+
+/* VIAJES */
+.dest-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.dest-header{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;border-bottom:1px solid var(--border);}
+.dest-flag-big{font-size:28px;flex-shrink:0;margin-top:2px;}
+.dest-info{flex:1;}
+.dest-name{font-family:var(--serif);font-size:19px;font-weight:300;color:var(--text);}
+.dest-dates-mono{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:3px;}
+.mission-pill{display:inline-block;margin-top:8px;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:500;}
+.mp-green{background:rgba(102,187,106,.12);color:var(--green);border:1px solid rgba(102,187,106,.2);}
+.mp-orange{background:rgba(255,112,67,.12);color:var(--orange);border:1px solid rgba(255,112,67,.2);}
+.mp-purple{background:rgba(179,157,219,.12);color:var(--purple);border:1px solid rgba(179,157,219,.2);}
+.dest-countdown{text-align:right;flex-shrink:0;}
+.cd-num{font-family:var(--mono);font-size:28px;font-weight:500;color:var(--orange);}
+.cd-label{font-size:10px;color:var(--text3);margin-top:2px;}
+.dest-body{display:grid;grid-template-columns:repeat(4,1fr);}
+.dc{padding:14px 16px;border-right:1px solid var(--border);}
+.dc:last-child{border-right:none;}
+.dc-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.dc-val{font-size:13px;font-weight:500;color:var(--text);}
+.dc-sub{font-size:11px;color:var(--text3);margin-top:3px;}
+.split-bar{display:flex;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid var(--border);background:rgba(255,255,255,.02);}
+.split-label{font-family:var(--mono);font-size:11px;color:var(--text3);flex:1;}
+.split-val{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--lime);}
+.split-tag{font-family:var(--mono);font-size:10px;background:rgba(200,240,96,.08);color:var(--text3);padding:2px 10px;border-radius:20px;border:1px solid rgba(200,240,96,.12);}
+.dest-footer{display:flex;align-items:center;gap:10px;padding:10px 20px;background:rgba(0,0,0,.15);}
+.df-label{font-size:11px;color:var(--text3);flex:1;}
+.df-pct{font-family:var(--mono);font-size:11px;color:var(--text3);width:30px;text-align:right;}
+
+/* ALOJAMIENTOS */
+.aloj-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.aloj-header{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);}
+.aloj-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.aloj-nombre{font-size:14px;font-weight:500;color:var(--text);}
+.aloj-dest{font-size:11px;color:var(--text3);margin-top:2px;}
+.aloj-body{display:grid;grid-template-columns:repeat(5,1fr);}
+.ac{padding:12px 16px;border-right:1px solid var(--border);}
+.ac:last-child{border-right:none;}
+.ac-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;}
+.ac-val{font-size:13px;font-weight:500;color:var(--text);}
+.ac-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.aloj-split{display:flex;align-items:center;gap:12px;padding:10px 20px;border-top:1px solid var(--border);background:rgba(255,255,255,.02);}
+.aloj-notes{padding:10px 20px;border-top:1px solid var(--border);background:rgba(0,0,0,.1);font-size:12px;color:var(--text3);line-height:1.5;}
+
+/* TAREAS */
+.task-header-row{display:grid;grid-template-columns:28px 1fr 110px 100px 90px 100px 48px;gap:12px;padding:10px 20px;font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);}
+.task-row-item{display:grid;grid-template-columns:28px 1fr 110px 100px 90px 100px 48px;gap:12px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .1s;}
+.task-row-item:last-child{border-bottom:none;}
+.task-row-item:hover{background:rgba(255,255,255,.02);}
+.task-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.task-check.done{background:var(--green);border-color:var(--green);}
+.task-check.done::after{content:'✓';font-size:9px;color:var(--bg);}
+.task-name{font-size:13px;color:var(--text);}
+.task-name.done{color:var(--text3);text-decoration:line-through;}
+.task-notes-small{font-size:11px;color:var(--text3);margin-top:2px;}
+.country-tag{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(100,181,246,.1);color:var(--blue);border:1px solid rgba(100,181,246,.15);white-space:nowrap;display:inline-flex;}
+.resp-tag{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.05);color:var(--text2);border:1px solid var(--border);white-space:nowrap;display:inline-flex;}
+.resp-tag.ag{background:rgba(200,240,96,.08);color:var(--lime2);border-color:rgba(200,240,96,.15);}
+.resp-tag.na{background:rgba(100,181,246,.08);color:var(--blue);border-color:rgba(100,181,246,.15);}
+.resp-tag.ambos{background:rgba(179,157,219,.08);color:var(--purple);border-color:rgba(179,157,219,.15);}
+.date-val{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.date-val.urgent{color:var(--orange);}
+
+/* ROADMAP */
+.phase-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.phase-header{display:flex;align-items:center;gap:14px;padding:16px 20px;}
+.phase-num{font-family:var(--mono);font-size:11px;color:var(--text3);width:24px;}
+.phase-name{font-size:14px;font-weight:500;color:var(--text);flex:1;}
+.phase-dates{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.phase-pct{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--lime);width:40px;text-align:right;}
+.phase-bar{padding:0 20px 16px;}
+.phase-hitos{border-top:1px solid var(--border);}
+.hito-row{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--border);font-size:12px;}
+.hito-row:last-child{border-bottom:none;}
+.hito-label{flex:1;color:var(--text2);}
+.hito-resp{font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+/* PROVEEDORES */
+.prov-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.prov-header{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);}
+.prov-flag{font-size:20px;flex-shrink:0;}
+.prov-name{font-size:14px;font-weight:500;color:var(--text);flex:1;}
+.prov-body{display:grid;grid-template-columns:repeat(4,1fr);}
+.pc{padding:12px 16px;border-right:1px solid var(--border);}
+.pc:last-child{border-right:none;}
+.pc-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;}
+.pc-val{font-size:13px;font-weight:500;color:var(--text);}
+.prov-notes{padding:12px 20px;border-top:1px solid var(--border);background:rgba(0,0,0,.1);font-size:12px;color:var(--text3);line-height:1.5;}
+
+.empty-state{padding:40px 20px;text-align:center;}
+.empty-state p{font-size:13px;color:var(--text3);margin-top:8px;}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{width:360px;text-align:center;}
+.login-logo{font-family:var(--serif);font-size:42px;font-weight:300;color:var(--lime);margin-bottom:6px;}
+.login-sub{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:40px;}
+.login-field{margin-bottom:14px;text-align:left;}
+.login-field label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px;}
+.login-input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;color:var(--text);font-family:var(--sans);font-size:14px;outline:none;transition:border .15s;}
+.login-input:focus{border-color:var(--lime);}
+.login-btn{width:100%;background:var(--lime);color:var(--bg);border:none;border-radius:10px;padding:13px;font-family:var(--mono);font-size:13px;font-weight:500;cursor:pointer;margin-top:8px;transition:background .15s;}
+.login-btn:hover{background:var(--lime2);}
+.login-error{font-size:12px;color:var(--red);margin-top:10px;min-height:18px;font-family:var(--mono);}
+
+/* RESP PILL */
+.resp-pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;padding:2px 8px 2px 5px;border-radius:20px;border:1px solid var(--border2);}
+.resp-pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">I need $</div>
+    <div class="login-sub">for porsche</div>
+    <div class="login-field"><label>Clave de acceso</label><input class="login-input" type="password" id="login-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<div class="sidebar">
+  <div class="logo-area">
+    <div class="logo-main">WHYnot</div>
+    <div class="logo-sub">proyecto bali 2026</div>
+  </div>
+  <div class="nav">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="showPanel('dashboard')"><div class="nav-dot"></div>Dashboard</div>
+    <div class="nav-section">Viaje</div>
+    <div class="nav-item" onclick="showPanel('viajes')"><div class="nav-dot nd-o"></div>Destinos y vuelos</div>
+    <div class="nav-item" onclick="showPanel('alojamientos')"><div class="nav-dot nd-pi"></div>Alojamientos</div>
+    <div class="nav-section">Operaciones</div>
+    <div class="nav-item" onclick="showPanel('tareas')"><div class="nav-dot nd-y"></div>Tareas</div>
+    <div class="nav-item" onclick="showPanel('roadmap')"><div class="nav-dot nd-g"></div>Roadmap</div>
+    <div class="nav-item" onclick="showPanel('proveedores')"><div class="nav-dot nd-b"></div>Proveedores</div>
+    <div class="nav-section">Config</div>
+    <div class="nav-item" onclick="showPanel('config')"><div class="nav-dot" style="background:var(--text3);"></div>Responsables</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="av-row" style="justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="av-c">AG</div>
+        <div class="av-n">Agustín + Nano</div>
+      </div>
+      <button onclick="doLogout()" title="Cerrar sesión" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px;border-radius:6px;transition:color .15s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">⏻</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="panel active" id="dashboard">
+    <div class="panel-header">
+      <div><div class="panel-title">Dashboard</div><div class="panel-sub">Resumen general — abril 2026</div></div>
+      <span class="panel-tag" id="dash-tag">cargando...</span>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="mc-label">Costo total viaje</div><div class="mc-val lime" id="dm-costo">—</div><div class="mc-sub" id="dm-sub">—</div></div>
+      <div class="metric-card"><div class="mc-label">Días al primer vuelo</div><div class="mc-val orange" id="dm-dias">—</div><div class="mc-sub" id="dm-dest">—</div></div>
+      <div class="metric-card"><div class="mc-label">Tareas pendientes</div><div class="mc-val" id="dm-tareas">—</div><div class="mc-sub" id="dm-tareas-sub">—</div></div>
+      <div class="metric-card"><div class="mc-label">Proveedores</div><div class="mc-val blue" id="dm-provs">—</div><div class="mc-sub" id="dm-provs-sub">—</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px;">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-head"><span class="card-title">Destinos</span><span style="font-size:12px;color:var(--text3);cursor:pointer;" onclick="showPanel('viajes')">ver todo →</span></div>
+          <div id="dash-destinos"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Roadmap</span><span style="font-size:12px;color:var(--text3);cursor:pointer;" onclick="showPanel('roadmap')">ver todo →</span></div>
+          <div id="dash-roadmap"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-head"><span class="card-title">Tareas urgentes</span><span style="font-size:12px;color:var(--text3);cursor:pointer;" onclick="showPanel('tareas')">ver todas →</span></div>
+          <div id="dash-tareas"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Alojamientos</span><span style="font-size:12px;color:var(--text3);cursor:pointer;" onclick="showPanel('alojamientos')">ver todos →</span></div>
+          <div id="dash-aloj"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESTINOS Y VUELOS -->
+  <div class="panel" id="viajes">
+    <div class="panel-header">
+      <div><div class="panel-title">Destinos y vuelos</div><div class="panel-sub">Misiones, fechas y cotización de vuelos por destino</div></div>
+      <button class="btn primary" onclick="openModal('viaje')">+ Nuevo destino</button>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="mc-label">Total vuelos</div><div class="mc-val" id="v-vuelos">—</div><div class="mc-sub">cotizados</div></div>
+      <div class="metric-card"><div class="mc-label">Cada uno (50%)</div><div class="mc-val orange" id="v-mitad">—</div><div class="mc-sub">solo vuelos</div></div>
+      <div class="metric-card"><div class="mc-label">Días totales</div><div class="mc-val" id="v-dias">—</div><div class="mc-sub" id="v-rango">—</div></div>
+      <div class="metric-card"><div class="mc-label">Vuelos confirmados</div><div class="mc-val green" id="v-confirmados">—</div><div class="mc-sub">comprados</div></div>
+    </div>
+    <div id="viajes-list"></div>
+  </div>
+
+  <!-- ALOJAMIENTOS -->
+  <div class="panel" id="alojamientos">
+    <div class="panel-header">
+      <div><div class="panel-title">Alojamientos</div><div class="panel-sub">Airbnbs, hoteles y hospedajes por destino y período</div></div>
+      <button class="btn primary" onclick="openModal('aloj')">+ Nuevo alojamiento</button>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="mc-label">Total alojamientos</div><div class="mc-val" id="a-total">—</div><div class="mc-sub" id="a-tipos">—</div></div>
+      <div class="metric-card"><div class="mc-label">Costo total aloj.</div><div class="mc-val lime" id="a-costo">—</div><div class="mc-sub">todas las estadías</div></div>
+      <div class="metric-card"><div class="mc-label">Cada uno (50%)</div><div class="mc-val orange" id="a-mitad">—</div><div class="mc-sub">por persona</div></div>
+      <div class="metric-card"><div class="mc-label">Reservados</div><div class="mc-val green" id="a-reservados">—</div><div class="mc-sub" id="a-reservados-sub">—</div></div>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterAloj('todos',this)">Todos</button>
+      <div id="aloj-dest-filters"></div>
+    </div>
+    <div id="aloj-list"></div>
+  </div>
+
+  <!-- TAREAS -->
+  <div class="panel" id="tareas">
+    <div class="panel-header">
+      <div><div class="panel-title">Tareas</div><div class="panel-sub">Todas las tareas con responsable y estado</div></div>
+      <button class="btn primary" onclick="openModal('tarea')">+ Nueva tarea</button>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterTareas('todas',this)">Todas</button>
+      <button class="filter-btn" onclick="filterTareas('Pendiente',this)">Pendiente</button>
+      <button class="filter-btn" onclick="filterTareas('En curso',this)">En curso</button>
+      <button class="filter-btn" onclick="filterTareas('Lista',this)">Lista</button>
+      <button class="filter-btn" onclick="filterTareas('Agus',this)">Agus</button>
+      <button class="filter-btn" onclick="filterTareas('Nano',this)">Nano</button>
+      <button class="filter-btn" onclick="filterTareas('Ambos',this)">Ambos</button>
+    </div>
+    <div class="card">
+      <div class="task-header-row"><div></div><div>Tarea</div><div>País / Área</div><div>Responsable</div><div>Fecha límite</div><div>Estado</div><div></div></div>
+      <div id="tareas-list"></div>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="panel" id="roadmap">
+    <div class="panel-header">
+      <div><div class="panel-title">Roadmap</div><div class="panel-sub">Fases del proyecto WHYnot Bali</div></div>
+      <button class="btn primary" onclick="openModal('fase')">+ Nueva fase</button>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="mc-label">Completadas</div><div class="mc-val green" id="rm-comp">—</div><div class="mc-sub" id="rm-comp-sub">—</div></div>
+      <div class="metric-card"><div class="mc-label">En curso</div><div class="mc-val orange" id="rm-curso">—</div><div class="mc-sub">fases activas</div></div>
+      <div class="metric-card"><div class="mc-label">Avance general</div><div class="mc-val lime" id="rm-avance">—</div><div class="mc-sub">promedio fases</div></div>
+      <div class="metric-card"><div class="mc-label">Total fases</div><div class="mc-val" id="rm-total">—</div><div class="mc-sub" id="rm-total-sub">—</div></div>
+    </div>
+    <div id="roadmap-list"></div>
+  </div>
+
+  <!-- PROVEEDORES -->
+  <div class="panel" id="proveedores">
+    <div class="panel-header">
+      <div><div class="panel-title">Proveedores</div><div class="panel-sub">Fábricas y distribuidores — seguimiento</div></div>
+      <button class="btn primary" onclick="openModal('proveedor')">+ Nuevo proveedor</button>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="mc-label">Total</div><div class="mc-val" id="p-total">—</div><div class="mc-sub" id="p-paises">—</div></div>
+      <div class="metric-card"><div class="mc-label">Contactados</div><div class="mc-val green" id="p-contactados">—</div><div class="mc-sub">con respuesta</div></div>
+      <div class="metric-card"><div class="mc-label">Con cotización</div><div class="mc-val orange" id="p-cotizados">—</div><div class="mc-sub">precio recibido</div></div>
+      <div class="metric-card"><div class="mc-label">Por contactar</div><div class="mc-val blue" id="p-pendientes">—</div><div class="mc-sub">prioridad alta</div></div>
+    </div>
+    <div id="proveedores-list"></div>
+  </div>
+
+  <!-- CONFIG RESPONSABLES -->
+  <div class="panel" id="config">
+    <div class="panel-header">
+      <div><div class="panel-title">Responsables</div><div class="panel-sub">Las personas que aparecen como responsables en tareas, hitos y roadmap</div></div>
+      <button class="btn primary" onclick="openModal('resp')">+ Nuevo responsable</button>
+    </div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:40px 1fr 140px 120px 80px;gap:14px;padding:10px 20px;font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);">
+        <div></div><div>Nombre</div><div>Rol</div><div>Color</div><div></div>
+      </div>
+      <div id="config-resp-list"></div>
+    </div>
+
+    <div style="margin-top:32px;">
+      <div class="panel-title" style="font-size:20px;margin-bottom:6px;">Clave de acceso</div>
+      <div class="panel-sub" style="margin-bottom:16px;">Cambiar la clave compartida de la app</div>
+      <div class="card" style="padding:20px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:flex-end;">
+          <div><label class="form-label">Nueva clave</label><input class="form-input" type="password" id="new-pw" placeholder="••••••••"></div>
+          <div><label class="form-label">Confirmar clave</label><input class="form-input" type="password" id="confirm-pw" placeholder="••••••••"></div>
+          <button class="btn primary" onclick="changePw()" style="height:40px;">Guardar</button>
+        </div>
+        <div id="pw-msg" style="font-size:12px;margin-top:10px;font-family:var(--mono);min-height:18px;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL VIAJE -->
+<div class="modal-overlay" id="modal-viaje">
+  <div class="modal">
+    <div class="modal-title" id="modal-viaje-title">Nuevo destino</div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Destino</label><input class="form-input" id="v-nombre" placeholder="ej: Barcelona, España"></div>
+      <div class="form-row"><label class="form-label">Emoji bandera</label><input class="form-input" id="v-flag" placeholder="🇪🇸" maxlength="4"></div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Fecha inicio</label><input class="form-input" type="date" id="v-inicio"></div>
+      <div class="form-row"><label class="form-label">Fecha fin</label><input class="form-input" type="date" id="v-fin"></div>
+    </div>
+    <div class="form-row"><label class="form-label">Misión</label><input class="form-input" id="v-mision" placeholder="ej: visitar fábricas y cerrar proveedor"></div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Vuelo cotizado (USD)</label><input class="form-input" type="number" id="v-vuelo" placeholder="1200"></div>
+      <div class="form-row"><label class="form-label">Estado del vuelo</label>
+        <select class="form-select" id="v-estado-vuelo"><option>Sin cotizar</option><option>Cotizado</option><option>Comprado</option></select>
+      </div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Color misión</label>
+        <select class="form-select" id="v-color"><option value="mp-green">Verde</option><option value="mp-orange">Naranja</option><option value="mp-purple">Violeta</option></select>
+      </div>
+      <div class="form-row"><label class="form-label">Progreso (%)</label><input class="form-input" type="number" id="v-progreso" placeholder="0" min="0" max="100"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('viaje')">Cancelar</button>
+      <button class="btn primary" onclick="saveViaje()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALOJAMIENTO -->
+<div class="modal-overlay" id="modal-aloj">
+  <div class="modal">
+    <div class="modal-title" id="modal-aloj-title">Nuevo alojamiento</div>
+    <div class="form-row"><label class="form-label">Nombre del alojamiento</label><input class="form-input" id="a-nombre" placeholder="ej: Airbnb Gracia, Hostel Bangkok Centro"></div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Destino asociado</label>
+        <select class="form-select" id="a-destino"></select>
+      </div>
+      <div class="form-row"><label class="form-label">Tipo</label>
+        <select class="form-select" id="a-tipo"><option>Airbnb</option><option>Hotel</option><option>Hostel</option><option>Departamento</option><option>Otro</option></select>
+      </div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Check-in</label><input class="form-input" type="date" id="a-checkin"></div>
+      <div class="form-row"><label class="form-label">Check-out</label><input class="form-input" type="date" id="a-checkout"></div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Precio / noche (USD)</label><input class="form-input" type="number" id="a-precio" placeholder="85"></div>
+      <div class="form-row"><label class="form-label">Estado</label>
+        <select class="form-select" id="a-estado"><option>Sin reservar</option><option>Buscando</option><option>Reservado</option><option>Pagado</option></select>
+      </div>
+    </div>
+    <div class="form-row"><label class="form-label">Ubicación / notas</label><textarea class="form-textarea" id="a-notas" placeholder="Barrio, dirección, link de reserva, condiciones..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('aloj')">Cancelar</button>
+      <button class="btn primary" onclick="saveAloj()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TAREA -->
+<div class="modal-overlay" id="modal-tarea">
+  <div class="modal">
+    <div class="modal-title" id="modal-tarea-title">Nueva tarea</div>
+    <div class="form-row"><label class="form-label">Tarea</label><input class="form-input" id="t-nombre" placeholder="ej: Contactar estudio de patentes"></div>
+    <div class="form-row"><label class="form-label">Notas</label><textarea class="form-textarea" id="t-notas" placeholder="Detalles opcionales..."></textarea></div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">País / Área</label><input class="form-input" id="t-pais" placeholder="ej: Legal, China, Bali"></div>
+      <div class="form-row"><label class="form-label">Responsable</label>
+        <select class="form-select" id="t-resp"></select>
+      </div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Fecha límite</label><input class="form-input" type="date" id="t-fecha"></div>
+      <div class="form-row"><label class="form-label">Estado</label>
+        <select class="form-select" id="t-estado"><option>Pendiente</option><option>En curso</option><option>Lista</option></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('tarea')">Cancelar</button>
+      <button class="btn primary" onclick="saveTarea()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROVEEDOR -->
+<div class="modal-overlay" id="modal-proveedor">
+  <div class="modal">
+    <div class="modal-title" id="modal-prov-title">Nuevo proveedor</div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Nombre</label><input class="form-input" id="p-nombre" placeholder="ej: Guangzhou LatexTech"></div>
+      <div class="form-row"><label class="form-label">Bandera</label><input class="form-input" id="p-flag" placeholder="🇨🇳" maxlength="4"></div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">País</label><input class="form-input" id="p-pais" placeholder="ej: China"></div>
+      <div class="form-row"><label class="form-label">Tipo</label>
+        <select class="form-select" id="p-tipo"><option>Fábrica</option><option>Distribuidor</option><option>Agente</option><option>Otro</option></select>
+      </div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Cotización</label><input class="form-input" id="p-cotizacion" placeholder="ej: $0.08 / u"></div>
+      <div class="form-row"><label class="form-label">Lead time</label><input class="form-input" id="p-leadtime" placeholder="ej: 45 días"></div>
+    </div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Certificaciones</label><input class="form-input" id="p-cert" placeholder="ej: ISO 4074, CE"></div>
+      <div class="form-row"><label class="form-label">Estado</label>
+        <select class="form-select" id="p-estado"><option>Sin contactar</option><option>Contactado</option><option>En diálogo</option><option>Descartado</option></select>
+      </div>
+    </div>
+    <div class="form-row"><label class="form-label">Notas</label><textarea class="form-textarea" id="p-notas" placeholder="Condiciones, reuniones, observaciones..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('proveedor')">Cancelar</button>
+      <button class="btn primary" onclick="saveProveedor()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FASE -->
+<div class="modal-overlay" id="modal-fase">
+  <div class="modal" style="width:600px;">
+    <div class="modal-title" id="modal-fase-title">Nueva fase</div>
+    <div class="form-row"><label class="form-label">Nombre de la fase</label><input class="form-input" id="f-nombre" placeholder="ej: Lanzamiento en Bali"></div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="form-label">Fechas / período</label><input class="form-input" id="f-fechas" placeholder="ej: ago 12–30 · 2026"></div>
+      <div class="form-row"><label class="form-label">Estado</label>
+        <select class="form-select" id="f-estado">
+          <option>Próxima</option><option>En curso</option><option>Completada</option><option>Bloqueada</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><label class="form-label">Progreso (%)</label><input class="form-input" type="number" id="f-pct" placeholder="0" min="0" max="100"></div>
+
+    <div class="form-row">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <label class="form-label" style="margin:0;">Hitos</label>
+        <button class="btn" style="padding:4px 12px;font-size:11px;" onclick="addHitoRow()">+ Agregar hito</button>
+      </div>
+      <div id="hitos-container" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('fase')">Cancelar</button>
+      <button class="btn primary" onclick="saveFase()">Guardar fase</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESPONSABLE -->
+<div class="modal-overlay" id="modal-resp">
+  <div class="modal" style="width:420px;">
+    <div class="modal-title" id="modal-resp-title">Nuevo responsable</div>
+    <div class="form-row"><label class="form-label">Nombre</label><input class="form-input" id="r-nombre" placeholder="ej: Agustín"></div>
+    <div class="form-row"><label class="form-label">Rol</label><input class="form-input" id="r-rol" placeholder="ej: Founder, Legal, Ops, Diseño"></div>
+    <div class="form-row">
+      <label class="form-label">Color de identificación</label>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;" id="color-picker">
+        <div class="color-opt" data-color="#c8f060" style="width:28px;height:28px;border-radius:50%;background:#c8f060;cursor:pointer;border:2px solid transparent;" onclick="selectColor('#c8f060',this)"></div>
+        <div class="color-opt" data-color="#64b5f6" style="width:28px;height:28px;border-radius:50%;background:#64b5f6;cursor:pointer;border:2px solid transparent;" onclick="selectColor('#64b5f6',this)"></div>
+        <div class="color-opt" data-color="#ff7043" style="width:28px;height:28px;border-radius:50%;background:#ff7043;cursor:pointer;border:2px solid transparent;" onclick="selectColor('#ff7043',this)"></div>
+        <div class="color-opt" data-color="#b39ddb" style="width:28px;height:28px;border-radius:50%;background:#b39ddb;cursor:pointer;border:2px solid transparent;" onclick="selectColor('#b39ddb',this)"></div>
+        <div class="color-opt" data-color="#66bb6a" style="width:28px;height:28px;border-radius:50%;background:#66bb6a;cursor:pointer;border:2px solid transparent;" onclick="selectColor('#66bb6a',this)"></div>
+        <div class="color-opt" data-color="#ffd54f" style="width:28px;height:28px;border-radius:50%;background:#ffd54f;cursor:pointer;border:2px solid transparent;" onclick="selectColor('#ffd54f',this)"></div>
+        <div class="color-opt" data-color="#f48fb1" style="width:28px;height:28px;border-radius:50%;background:#f48fb1;cursor:pointer;border:2px solid transparent;" onclick="selectColor('#f48fb1',this)"></div>
+        <div class="color-opt" data-color="#4db6ac" style="width:28px;height:28px;border-radius:50%;background:#4db6ac;cursor:pointer;border:2px solid transparent;" onclick="selectColor('#4db6ac',this)"></div>
+        <input type="color" id="r-color-custom" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;background:transparent;padding:0;" title="Color personalizado" oninput="selectColor(this.value,null)">
+      </div>
+      <input type="hidden" id="r-color" value="#c8f060">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('resp')">Cancelar</button>
+      <button class="btn primary" onclick="saveResp()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="width:360px;">
+    <div class="modal-title">¿Eliminar?</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:8px;" id="confirm-msg">Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('confirm')">Cancelar</button>
+      <button class="btn danger" onclick="confirmDelete()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────
+let data = {
+  viajes: [
+    { id:1, nombre:'Barcelona, España', flag:'🇪🇸', inicio:'2026-07-01', fin:'2026-08-01', mision:'Operaciones remotas + marca + legal', color:'mp-green', vuelo:1200, estado_vuelo:'Comprado', progreso:75 },
+    { id:2, nombre:'Asia — China · Singapur · Tailandia', flag:'🌏', inicio:'2026-08-01', fin:'2026-08-12', mision:'Visitar fábricas y cerrar proveedor', color:'mp-orange', vuelo:1800, estado_vuelo:'Cotizado', progreso:20 },
+    { id:3, nombre:'Bali, Indonesia', flag:'🇮🇩', inicio:'2026-08-12', fin:'2026-08-30', mision:'Preparar y ejecutar lanzamiento WHYnot', color:'mp-purple', vuelo:420, estado_vuelo:'Sin cotizar', progreso:5 }
+  ],
+  alojamientos: [
+    { id:1, nombre:'Airbnb Gracia', destino_id:1, tipo:'Airbnb', checkin:'2026-07-01', checkout:'2026-07-31', precio:85, estado:'Reservado', notas:'Barrio Gracia, Barcelona. 2 habitaciones, patio.' },
+    { id:2, nombre:'Airbnb Shanghai Centro', destino_id:2, tipo:'Airbnb', checkin:'2026-08-01', checkout:'2026-08-05', precio:55, estado:'Sin reservar', notas:'Zona French Concession. Buscar cerca del metro.' },
+    { id:3, nombre:'Hotel Singapur', destino_id:2, tipo:'Hotel', checkin:'2026-08-05', checkout:'2026-08-09', precio:90, estado:'Buscando', notas:'Presupuesto máx $100/noche. Zona CBD.' },
+    { id:4, nombre:'Hostel Bangkok', destino_id:2, tipo:'Hostel', checkin:'2026-08-09', checkout:'2026-08-12', precio:30, estado:'Sin reservar', notas:'Solo 3 noches. Privado si es posible.' },
+    { id:5, nombre:'Villa Canggu', destino_id:3, tipo:'Airbnb', checkin:'2026-08-12', checkout:'2026-08-30', precio:70, estado:'Sin reservar', notas:'Canggu o Seminyak. Con piscina para el lanzamiento.' }
+  ],
+  tareas: [
+    { id:1, nombre:'Contactar estudio de patentes', notas:'Inicio del proceso de registro', pais:'Legal', resp:'Agus', fecha:'2026-04-20', estado:'En curso' },
+    { id:2, nombre:'Lista de fábricas en China', notas:'Mínimo 5 opciones con contacto', pais:'China', resp:'Nano', fecha:'2026-04-30', estado:'Pendiente' },
+    { id:3, nombre:'Cotizar y comprar vuelos Barcelona', notas:'Salida 1 de julio', pais:'España', resp:'Ambos', fecha:'2026-04-25', estado:'Pendiente' },
+    { id:4, nombre:'Investigar regulaciones para condones en Bali', notas:'Importación, venta, requisitos sanitarios', pais:'Bali', resp:'Nano', fecha:'2026-05-15', estado:'Pendiente' },
+    { id:5, nombre:'Reservar airbnbs para Asia', notas:'Shanghai, Singapur, Bangkok', pais:'Asia', resp:'Ambos', fecha:'2026-06-01', estado:'Pendiente' },
+    { id:6, nombre:'Armar deck para fábricas', notas:'Quiénes somos, volumen estimado, marca', pais:'Asia', resp:'Agus', fecha:'2026-06-15', estado:'Pendiente' },
+    { id:7, nombre:'Definir nombre legal de la marca', notas:'WHYnot International', pais:'Legal', resp:'Agus', fecha:'2026-04-10', estado:'Lista' },
+    { id:8, nombre:'Confirmar branding y paleta', notas:'Logo, colores, tipografías', pais:'Marca', resp:'Ambos', fecha:'2026-04-01', estado:'Lista' }
+  ],
+  proveedores: [
+    { id:1, nombre:'Guangzhou LatexTech Co.', flag:'🇨🇳', pais:'China', tipo:'Fábrica', cotizacion:'$0,08 / u', leadtime:'45 días', cert:'ISO 4074, CE', estado:'En diálogo', notas:'Interesados en sampling primero. Piden MOU antes de cotización final.' },
+    { id:2, nombre:'Singapore MedPackage Pte.', flag:'🇸🇬', pais:'Singapur', tipo:'Distribuidor', cotizacion:'—', leadtime:'—', cert:'ISO 13485', estado:'Sin contactar', notas:'Red en todo el sudeste asiático.' },
+    { id:3, nombre:'Bangkok ProCondom Co.', flag:'🇹🇭', pais:'Tailandia', tipo:'Fábrica', cotizacion:'—', leadtime:'—', cert:'ISO 4074', estado:'Sin contactar', notas:'Encontrado en Alibaba. Visitar en el tramo Tailandia.' },
+    { id:4, nombre:'Qingdao SafeGuard Latex', flag:'🇨🇳', pais:'China', tipo:'Fábrica', cotizacion:'—', leadtime:'—', cert:'ISO 4074, CE', estado:'Sin contactar', notas:'Especialistas en packaging personalizado para marcas boutique.' }
+  ]
+};
+
+let editingId = null, editingType = null, alojFilter = 'todos', tareaFilter = 'todas';
+let deletePending = { type:null, id:null };
+
+// ─── DATA ROADMAP (ahora editable) ───────────────────────────
+data.roadmap = [
+  { id:101, orden:1, name:'Branding e identidad', estado:'Completada', fechas:'ene – feb 2026', pct:100, hitos:[
+    {id:201,l:'Nombre de marca definido',r:'Ambos',e:'Lista'},{id:202,l:'Logo y paleta de colores',r:'Agus',e:'Lista'},{id:203,l:'Tipografías y guía de marca',r:'Agus',e:'Lista'}
+  ]},
+  { id:102, orden:2, name:'Legal y patentamiento', estado:'En curso', fechas:'mar – may 2026', pct:30, hitos:[
+    {id:204,l:'Nombre legal definido',r:'Agus',e:'Lista'},{id:205,l:'Contactar estudio de patentes',r:'Agus',e:'En curso'},{id:206,l:'Presentar solicitud de registro',r:'Agus',e:'Pendiente'},{id:207,l:'Definir país de constitución',r:'Ambos',e:'Pendiente'}
+  ]},
+  { id:103, orden:3, name:'Búsqueda y cierre de proveedor', estado:'En curso', fechas:'abr – jul 2026', pct:10, hitos:[
+    {id:208,l:'Lista de fábricas Asia (5+)',r:'Nano',e:'En curso'},{id:209,l:'Primer contacto con fábricas',r:'Ambos',e:'Pendiente'},{id:210,l:'Visita presencial en Asia',r:'Ambos',e:'Pendiente'},{id:211,l:'Cerrar acuerdo con proveedor',r:'Ambos',e:'Pendiente'}
+  ]},
+  { id:104, orden:4, name:'Producción primer lote', estado:'Próxima', fechas:'ago – sep 2026', pct:0, hitos:[
+    {id:212,l:'Definir tamaño del lote',r:'Ambos',e:'Pendiente'},{id:213,l:'Pagar adelanto a fábrica',r:'Ambos',e:'Pendiente'},{id:214,l:'Confirmar packaging y diseño',r:'Agus',e:'Pendiente'}
+  ]},
+  { id:105, orden:5, name:'Lanzamiento en Bali', estado:'Próxima', fechas:'ago 12–30 · 2026', pct:0, hitos:[
+    {id:215,l:'Definir estrategia de lanzamiento',r:'Ambos',e:'Pendiente'},{id:216,l:'Primeros 500 clientes / puntos de venta',r:'Ambos',e:'Pendiente'},{id:217,l:'Evento / activación en Bali',r:'Ambos',e:'Pendiente'}
+  ]}
+];
+
+// ─── UTILS ───────────────────────────────────────────────────
+function uid(){ return Date.now() + Math.floor(Math.random()*9999); }
+function diasHasta(d){ const h=new Date();h.setHours(0,0,0,0);return Math.ceil((new Date(d)-h)/86400000); }
+function diasEntre(a,b){ return Math.max(0,Math.ceil((new Date(b)-new Date(a))/86400000)); }
+function formatF(d){ if(!d)return'—'; const x=new Date(d+'T00:00:00'); return x.toLocaleDateString('es-AR',{day:'numeric',month:'short'}); }
+function isUrgent(d){ return d && diasHasta(d)<=15; }
+function progColor(p){ return p>=80?'var(--green)':p>=30?'var(--orange)':'var(--yellow)'; }
+
+function badge(e){
+  const m={'Lista':'b-ok','Comprado':'b-ok','Reservado':'b-ok','Pagado':'b-ok','En curso':'b-curso','En diálogo':'b-curso','Cotizado':'b-curso','Buscando':'b-curso','Pendiente':'b-pend','Sin cotizar':'b-no','Sin reservar':'b-no','Sin contactar':'b-no','Contactado':'b-curso','Descartado':'b-no','Próxima':'b-no','Completada':'b-ok'};
+  return `<span class="badge ${m[e]||'b-no'} status-pill">${e}</span>`;
+}
+
+function getNombreDestino(id){
+  const v=data.viajes.find(x=>x.id===id);
+  return v ? v.nombre.split('—')[0].trim() : '—';
+}
+
+// ─── NAV ─────────────────────────────────────────────────────
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const labels={dashboard:'Dashboard',viajes:'Destinos y vuelos',alojamientos:'Alojamientos',tareas:'Tareas',roadmap:'Roadmap',proveedores:'Proveedores',config:'Responsables'};
+  document.querySelectorAll('.nav-item').forEach(item=>{ if(item.textContent.trim()===labels[id]) item.classList.add('active'); });
+  document.querySelector('.main').scrollTop=0;
+  renderAll();
+}
+
+// ─── DROPDOWNS ───────────────────────────────────────────────
+function closeAllDD(){ document.querySelectorAll('.dropdown.open').forEach(d=>d.classList.remove('open')); }
+function toggleDD(id,e){ e.stopPropagation(); const dd=document.getElementById(id); const was=dd.classList.contains('open'); closeAllDD(); if(!was)dd.classList.add('open'); }
+document.addEventListener('click',closeAllDD);
+
+// ─── MODALS ──────────────────────────────────────────────────
+function openModal(type, id=null){
+  editingType=type; editingId=id; closeAllDD();
+
+  if(type==='viaje'){
+    document.getElementById('modal-viaje-title').textContent = id?'Editar destino':'Nuevo destino';
+    const v=id?data.viajes.find(x=>x.id===id):{};
+    document.getElementById('v-nombre').value=v.nombre||'';
+    document.getElementById('v-flag').value=v.flag||'';
+    document.getElementById('v-inicio').value=v.inicio||'';
+    document.getElementById('v-fin').value=v.fin||'';
+    document.getElementById('v-mision').value=v.mision||'';
+    document.getElementById('v-vuelo').value=v.vuelo||'';
+    document.getElementById('v-estado-vuelo').value=v.estado_vuelo||'Sin cotizar';
+    document.getElementById('v-color').value=v.color||'mp-green';
+    document.getElementById('v-progreso').value=v.progreso||0;
+    document.getElementById('modal-viaje').classList.add('open');
+  }
+  if(type==='aloj'){
+    document.getElementById('modal-aloj-title').textContent = id?'Editar alojamiento':'Nuevo alojamiento';
+    const a=id?data.alojamientos.find(x=>x.id===id):{};
+    // populate destino select
+    const sel=document.getElementById('a-destino');
+    sel.innerHTML=data.viajes.map(v=>`<option value="${v.id}" ${v.id===a.destino_id?'selected':''}>${v.nombre.split('—')[0].trim()}</option>`).join('');
+    document.getElementById('a-nombre').value=a.nombre||'';
+    document.getElementById('a-tipo').value=a.tipo||'Airbnb';
+    document.getElementById('a-checkin').value=a.checkin||'';
+    document.getElementById('a-checkout').value=a.checkout||'';
+    document.getElementById('a-precio').value=a.precio||'';
+    document.getElementById('a-estado').value=a.estado||'Sin reservar';
+    document.getElementById('a-notas').value=a.notas||'';
+    document.getElementById('modal-aloj').classList.add('open');
+  }
+  if(type==='tarea'){
+    document.getElementById('modal-tarea-title').textContent = id?'Editar tarea':'Nueva tarea';
+    const t=id?data.tareas.find(x=>x.id===id):{};
+    document.getElementById('t-nombre').value=t.nombre||'';
+    document.getElementById('t-notas').value=t.notas||'';
+    document.getElementById('t-pais').value=t.pais||'';
+    document.getElementById('t-resp').value=t.resp||'Agus';
+    document.getElementById('t-fecha').value=t.fecha||'';
+    document.getElementById('t-estado').value=t.estado||'Pendiente';
+    document.getElementById('modal-tarea').classList.add('open');
+  }
+  if(type==='fase'){
+    document.getElementById('modal-fase-title').textContent = id?'Editar fase':'Nueva fase';
+    const f=id?data.roadmap.find(x=>x.id===id):{};
+    document.getElementById('f-nombre').value=f.name||'';
+    document.getElementById('f-fechas').value=f.fechas||'';
+    document.getElementById('f-estado').value=f.estado||'Próxima';
+    document.getElementById('f-pct').value=f.pct||0;
+    document.getElementById('hitos-container').innerHTML='';
+    if(f.hitos&&f.hitos.length) f.hitos.forEach(h=>addHitoRow(h.l,h.r,h.e));
+    document.getElementById('modal-fase').classList.add('open');
+  }
+  if(type==='proveedor'){
+    document.getElementById('modal-prov-title').textContent = id?'Editar proveedor':'Nuevo proveedor';
+    const p=id?data.proveedores.find(x=>x.id===id):{};
+    document.getElementById('p-nombre').value=p.nombre||'';
+    document.getElementById('p-flag').value=p.flag||'';
+    document.getElementById('p-pais').value=p.pais||'';
+    document.getElementById('p-tipo').value=p.tipo||'Fábrica';
+    document.getElementById('p-cotizacion').value=p.cotizacion||'';
+    document.getElementById('p-leadtime').value=p.leadtime||'';
+    document.getElementById('p-cert').value=p.cert||'';
+    document.getElementById('p-estado').value=p.estado||'Sin contactar';
+    document.getElementById('p-notas').value=p.notas||'';
+    document.getElementById('modal-proveedor').classList.add('open');
+  }
+}
+
+function closeModal(type){ document.getElementById('modal-'+type).classList.remove('open'); editingId=null; editingType=null; }
+
+function openDel(type,id,msg){ deletePending={type,id}; document.getElementById('confirm-msg').textContent=msg||'Esta acción no se puede deshacer.'; document.getElementById('modal-confirm').classList.add('open'); }
+
+function confirmDelete(){
+  const {type,id}=deletePending;
+  if(type==='viaje') data.viajes=data.viajes.filter(x=>x.id!==id);
+  if(type==='aloj') data.alojamientos=data.alojamientos.filter(x=>x.id!==id);
+  if(type==='tarea') data.tareas=data.tareas.filter(x=>x.id!==id);
+  if(type==='proveedor') data.proveedores=data.proveedores.filter(x=>x.id!==id);
+  if(type==='fase'){ data.roadmap=data.roadmap.filter(x=>x.id!==id); recalcOrden(); }
+  closeModal('confirm'); renderAll();
+}
+
+// ─── SAVE ────────────────────────────────────────────────────
+function saveViaje(){
+  const obj={ id:editingId||uid(), nombre:document.getElementById('v-nombre').value, flag:document.getElementById('v-flag').value||'✈️', inicio:document.getElementById('v-inicio').value, fin:document.getElementById('v-fin').value, mision:document.getElementById('v-mision').value, color:document.getElementById('v-color').value, vuelo:parseFloat(document.getElementById('v-vuelo').value)||0, estado_vuelo:document.getElementById('v-estado-vuelo').value, progreso:parseInt(document.getElementById('v-progreso').value)||0 };
+  if(editingId){ const i=data.viajes.findIndex(x=>x.id===editingId); data.viajes[i]=obj; } else data.viajes.push(obj);
+  closeModal('viaje'); renderAll();
+}
+
+function saveAloj(){
+  const checkin=document.getElementById('a-checkin').value;
+  const checkout=document.getElementById('a-checkout').value;
+  const precio=parseFloat(document.getElementById('a-precio').value)||0;
+  const noches=checkin&&checkout?diasEntre(checkin,checkout):0;
+  const obj={ id:editingId||uid(), nombre:document.getElementById('a-nombre').value, destino_id:parseInt(document.getElementById('a-destino').value), tipo:document.getElementById('a-tipo').value, checkin, checkout, precio, noches, total:precio*noches, estado:document.getElementById('a-estado').value, notas:document.getElementById('a-notas').value };
+  if(editingId){ const i=data.alojamientos.findIndex(x=>x.id===editingId); data.alojamientos[i]=obj; } else data.alojamientos.push(obj);
+  closeModal('aloj'); renderAll();
+}
+
+function saveTarea(){
+  const obj={ id:editingId||uid(), nombre:document.getElementById('t-nombre').value, notas:document.getElementById('t-notas').value, pais:document.getElementById('t-pais').value, resp:document.getElementById('t-resp').value, fecha:document.getElementById('t-fecha').value, estado:document.getElementById('t-estado').value };
+  if(editingId){ const i=data.tareas.findIndex(x=>x.id===editingId); data.tareas[i]=obj; } else data.tareas.push(obj);
+  closeModal('tarea'); renderAll();
+}
+
+function saveProveedor(){
+  const obj={ id:editingId||uid(), nombre:document.getElementById('p-nombre').value, flag:document.getElementById('p-flag').value||'🌐', pais:document.getElementById('p-pais').value, tipo:document.getElementById('p-tipo').value, cotizacion:document.getElementById('p-cotizacion').value||'—', leadtime:document.getElementById('p-leadtime').value||'—', cert:document.getElementById('p-cert').value||'—', estado:document.getElementById('p-estado').value, notas:document.getElementById('p-notas').value };
+  if(editingId){ const i=data.proveedores.findIndex(x=>x.id===editingId); data.proveedores[i]=obj; } else data.proveedores.push(obj);
+  closeModal('proveedor'); renderAll();
+}
+
+function addHitoRow(l='', r='Ambos', e='Pendiente'){
+  const c=document.getElementById('hitos-container');
+  const id='hrow-'+uid();
+  const div=document.createElement('div');
+  div.id=id;
+  div.style.cssText='display:grid;grid-template-columns:1fr 90px 110px 28px;gap:8px;align-items:center;';
+  const respOpts = data.responsables.map(x=>`<option ${x.nombre===r?'selected':''}>${x.nombre}</option>`).join('');
+  div.innerHTML=`
+    <input class="form-input" placeholder="Descripción del hito" value="${l}" style="padding:8px 12px;font-size:12px;">
+    <select class="form-select" style="padding:8px 10px;font-size:12px;">${respOpts}</select>
+    <select class="form-select" style="padding:8px 10px;font-size:12px;">
+      <option ${e==='Pendiente'?'selected':''}>Pendiente</option>
+      <option ${e==='En curso'?'selected':''}>En curso</option>
+      <option ${e==='Lista'?'selected':''}>Lista</option>
+    </select>
+    <button onclick="document.getElementById('${id}').remove()" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:0;transition:color .15s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">×</button>`;
+  c.appendChild(div);
+}
+
+function saveFase(){
+  const rows=document.getElementById('hitos-container').children;
+  const hitos=Array.from(rows).map(row=>{
+    const inputs=row.querySelectorAll('input,select');
+    return { id:uid(), l:inputs[0].value.trim()||'Hito', r:inputs[1].value, e:inputs[2].value };
+  }).filter(h=>h.l&&h.l!=='Hito'||h.l==='Hito');
+  const maxOrden=data.roadmap.length?Math.max(...data.roadmap.map(x=>x.orden)):0;
+  const obj={
+    id:editingId||uid(),
+    orden:editingId?(data.roadmap.find(x=>x.id===editingId)||{}).orden||maxOrden+1:maxOrden+1,
+    name:document.getElementById('f-nombre').value,
+    fechas:document.getElementById('f-fechas').value,
+    estado:document.getElementById('f-estado').value,
+    pct:parseInt(document.getElementById('f-pct').value)||0,
+    hitos
+  };
+  if(editingId){ const i=data.roadmap.findIndex(x=>x.id===editingId); data.roadmap[i]=obj; }
+  else data.roadmap.push(obj);
+  data.roadmap.sort((a,b)=>a.orden-b.orden);
+  closeModal('fase'); renderAll();
+}
+
+function recalcOrden(){
+  data.roadmap.sort((a,b)=>a.orden-b.orden).forEach((f,i)=>f.orden=i+1);
+}
+
+function moverFase(id, dir){
+  const idx=data.roadmap.findIndex(x=>x.id===id);
+  const swap=dir==='up'?idx-1:idx+1;
+  if(swap<0||swap>=data.roadmap.length) return;
+  [data.roadmap[idx].orden, data.roadmap[swap].orden]=[data.roadmap[swap].orden, data.roadmap[idx].orden];
+  data.roadmap.sort((a,b)=>a.orden-b.orden);
+  renderRoadmap();
+}
+
+function cycleFaseEstado(id){
+  const f=data.roadmap.find(x=>x.id===id); if(!f) return;
+  const opts=['Próxima','En curso','Completada','Bloqueada'];
+  f.estado=opts[(opts.indexOf(f.estado)+1)%opts.length];
+  renderAll();
+}
+
+function cycleHito(faseId, hitoId){
+  const f=data.roadmap.find(x=>x.id===faseId); if(!f) return;
+  const h=f.hitos.find(x=>x.id===hitoId); if(!h) return;
+  const opts=['Pendiente','En curso','Lista'];
+  h.e=opts[(opts.indexOf(h.e)+1)%opts.length];
+  // auto-recalc pct
+  const total=f.hitos.length;
+  const listas=f.hitos.filter(x=>x.e==='Lista').length;
+  f.pct=total?Math.round(listas/total*100):0;
+  if(f.pct===100) f.estado='Completada';
+  else if(f.pct>0) f.estado='En curso';
+  renderAll();
+}
+
+// ─── QUICK STATE ─────────────────────────────────────────────
+function cycleViaje(id,field,opts){ const v=data.viajes.find(x=>x.id===id); if(!v)return; v[field]=opts[(opts.indexOf(v[field])+1)%opts.length]; renderAll(); }
+function cycleAloj(id){ const a=data.alojamientos.find(x=>x.id===id); if(!a)return; const opts=['Sin reservar','Buscando','Reservado','Pagado']; a.estado=opts[(opts.indexOf(a.estado)+1)%opts.length]; renderAll(); }
+function cycleProv(id){ const p=data.proveedores.find(x=>x.id===id); if(!p)return; const opts=['Sin contactar','Contactado','En diálogo','Descartado']; p.estado=opts[(opts.indexOf(p.estado)+1)%opts.length]; renderAll(); }
+function toggleTarea(id){ const t=data.tareas.find(x=>x.id===id); if(!t)return; const c=['Pendiente','En curso','Lista']; t.estado=c[(c.indexOf(t.estado)+1)%c.length]; renderAll(); }
+
+// ─── FILTERS ─────────────────────────────────────────────────
+function filterAloj(f,btn){
+  alojFilter=f;
+  document.querySelectorAll('#alojamientos .filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderAlojamientos();
+}
+function filterTareas(f,btn){
+  tareaFilter=f;
+  document.querySelectorAll('#tareas .filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderTareas();
+}
+
+// ─── RENDER VIAJES ───────────────────────────────────────────
+function renderViajes(){
+  let totalVuelos=0, dias=0, confirmados=0;
+  data.viajes.forEach(v=>{ totalVuelos+=(v.vuelo||0); dias+=v.inicio&&v.fin?diasEntre(v.inicio,v.fin):0; if(v.estado_vuelo==='Comprado')confirmados++; });
+  document.getElementById('v-vuelos').textContent='$'+totalVuelos.toLocaleString();
+  document.getElementById('v-mitad').textContent='$'+Math.round(totalVuelos/2).toLocaleString();
+  document.getElementById('v-dias').textContent=dias;
+  document.getElementById('v-rango').textContent=data.viajes.length+' destinos';
+  document.getElementById('v-confirmados').textContent=confirmados+' / '+data.viajes.length;
+
+  const list=document.getElementById('viajes-list');
+  if(!data.viajes.length){ list.innerHTML='<div class="empty-state"><p>No hay destinos. Agregá uno con "+ Nuevo destino".</p></div>'; return; }
+
+  list.innerHTML=data.viajes.map(v=>{
+    const d=v.inicio&&v.fin?diasEntre(v.inicio,v.fin):0;
+    const cd=v.inicio?diasHasta(v.inicio):'—';
+    const did='ddv'+v.id;
+    const alojCount=data.alojamientos.filter(a=>a.destino_id===v.id).length;
+    const alojTotal=data.alojamientos.filter(a=>a.destino_id===v.id).reduce((s,a)=>s+(a.total||0),0);
+    return `
+    <div class="dest-card">
+      <div class="dest-header">
+        <span class="dest-flag-big">${v.flag}</span>
+        <div class="dest-info">
+          <div class="dest-name">${v.nombre}</div>
+          <div class="dest-dates-mono">${formatF(v.inicio)} – ${formatF(v.fin)} · ${d} días</div>
+          <span class="mission-pill ${v.color}">${v.mision}</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div class="dest-countdown"><div class="cd-num">${cd}</div><div class="cd-label">días restantes</div></div>
+          <div class="action-menu">
+            <button class="action-btn" onclick="toggleDD('${did}',event)">⋯</button>
+            <div class="dropdown" id="${did}">
+              <div class="dd-item" onclick="openModal('viaje',${v.id});closeAllDD()">✏️ Editar</div>
+              <div class="dd-item" onclick="openModal('aloj');document.getElementById('a-destino').value=${v.id};closeAllDD()">🛏 Agregar alojamiento</div>
+              <div class="dd-sep"></div>
+              <div class="dd-item red" onclick="openDel('viaje',${v.id},'¿Eliminar ${v.nombre}?')">🗑 Eliminar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dest-body">
+        <div class="dc"><div class="dc-label">Vuelo cotizado</div><div class="dc-val">$${(v.vuelo||0).toLocaleString()}</div><div class="dc-sub">50/50 · $${Math.round((v.vuelo||0)/2).toLocaleString()} c/u</div></div>
+        <div class="dc">
+          <div class="dc-label">Estado vuelo</div>
+          <div class="dc-val" onclick="cycleViaje(${v.id},'estado_vuelo',['Sin cotizar','Cotizado','Comprado'])" style="cursor:pointer;" title="Click para cambiar">
+            ${badge(v.estado_vuelo)}
+          </div>
+        </div>
+        <div class="dc"><div class="dc-label">Alojamientos</div><div class="dc-val">${alojCount}</div><div class="dc-sub" style="cursor:pointer;color:var(--blue);" onclick="showPanel('alojamientos')">${alojCount?'ver →':'agregar →'}</div></div>
+        <div class="dc"><div class="dc-label">Total aloj. est.</div><div class="dc-val">${alojTotal?'$'+alojTotal.toLocaleString():'—'}</div><div class="dc-sub">${alojTotal?'$'+Math.round(alojTotal/2).toLocaleString()+' c/u':''}</div></div>
+      </div>
+      <div class="split-bar">
+        <span class="split-label">50/50 · vuelo + aloj. · cada uno pone</span>
+        <span class="split-val">$${Math.round(((v.vuelo||0)+alojTotal)/2).toLocaleString()}</span>
+        <span class="split-tag">por persona</span>
+      </div>
+      <div class="dest-footer">
+        <span class="df-label">Preparación</span>
+        <div class="prog-track" style="flex:2;"><div class="prog-fill" style="background:${progColor(v.progreso)};width:${v.progreso}%;"></div></div>
+        <span class="df-pct">${v.progreso}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── RENDER ALOJAMIENTOS ─────────────────────────────────────
+function renderAlojamientos(){
+  const list=document.getElementById('aloj-list');
+  const total=data.alojamientos.length;
+  const costoTotal=data.alojamientos.reduce((s,a)=>{
+    const n=a.checkin&&a.checkout?diasEntre(a.checkin,a.checkout):0;
+    return s+(a.precio||0)*n;
+  },0);
+  const reservados=data.alojamientos.filter(a=>a.estado==='Reservado'||a.estado==='Pagado').length;
+  const tipos=[...new Set(data.alojamientos.map(a=>a.tipo))];
+
+  document.getElementById('a-total').textContent=total;
+  document.getElementById('a-tipos').textContent=tipos.join(', ')||'—';
+  document.getElementById('a-costo').textContent='$'+costoTotal.toLocaleString();
+  document.getElementById('a-mitad').textContent='$'+Math.round(costoTotal/2).toLocaleString();
+  document.getElementById('a-reservados').textContent=reservados+' / '+total;
+  document.getElementById('a-reservados-sub').textContent=(total-reservados)+' sin confirmar';
+
+  // filtros dinámicos por destino
+  const filtersEl=document.getElementById('aloj-dest-filters');
+  filtersEl.innerHTML=data.viajes.map(v=>`
+    <button class="filter-btn ${alojFilter===String(v.id)?'active':''}" onclick="filterAloj('${v.id}',this)">
+      ${v.flag} ${v.nombre.split(',')[0].split('—')[0].trim()}
+    </button>`).join('');
+
+  let filtered=data.alojamientos;
+  if(alojFilter!=='todos') filtered=data.alojamientos.filter(a=>String(a.destino_id)===String(alojFilter));
+
+  if(!filtered.length){ list.innerHTML='<div class="empty-state"><p>No hay alojamientos para este filtro.</p></div>'; return; }
+
+  const tipoIcon={'Airbnb':'🏠','Hotel':'🏨','Hostel':'🛏','Departamento':'🏢','Otro':'📍'};
+  const tipoColor={'Airbnb':'rgba(255,112,67,.12)','Hotel':'rgba(100,181,246,.12)','Hostel':'rgba(179,157,219,.12)','Departamento':'rgba(102,187,106,.12)','Otro':'rgba(255,255,255,.06)'};
+
+  list.innerHTML=filtered.map(a=>{
+    const noches=a.checkin&&a.checkout?diasEntre(a.checkin,a.checkout):0;
+    const total=(a.precio||0)*noches;
+    const did='dda'+a.id;
+    return `
+    <div class="aloj-card">
+      <div class="aloj-header">
+        <div class="aloj-icon" style="background:${tipoColor[a.tipo]||'rgba(255,255,255,.06)'};">${tipoIcon[a.tipo]||'📍'}</div>
+        <div style="flex:1;">
+          <div class="aloj-nombre">${a.nombre}</div>
+          <div class="aloj-dest">${getNombreDestino(a.destino_id)} · ${a.tipo}</div>
+        </div>
+        <div onclick="cycleAloj(${a.id})" style="cursor:pointer;" title="Click para cambiar estado">${badge(a.estado)}</div>
+        <div class="action-menu">
+          <button class="action-btn" onclick="toggleDD('${did}',event)">⋯</button>
+          <div class="dropdown" id="${did}">
+            <div class="dd-item" onclick="openModal('aloj',${a.id});closeAllDD()">✏️ Editar</div>
+            <div class="dd-sep"></div>
+            <div class="dd-item red" onclick="openDel('aloj',${a.id},'¿Eliminar ${a.nombre}?')">🗑 Eliminar</div>
+          </div>
+        </div>
+      </div>
+      <div class="aloj-body">
+        <div class="ac"><div class="ac-label">Check-in</div><div class="ac-val">${formatF(a.checkin)}</div></div>
+        <div class="ac"><div class="ac-label">Check-out</div><div class="ac-val">${formatF(a.checkout)}</div></div>
+        <div class="ac"><div class="ac-label">Noches</div><div class="ac-val">${noches}</div></div>
+        <div class="ac"><div class="ac-label">Precio / noche</div><div class="ac-val">$${a.precio||0}</div></div>
+        <div class="ac"><div class="ac-label">Total</div><div class="ac-val">$${total.toLocaleString()}</div><div class="ac-sub">50/50 · $${Math.round(total/2).toLocaleString()} c/u</div></div>
+      </div>
+      ${a.notas?`<div class="aloj-notes">${a.notas}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ─── RENDER TAREAS ───────────────────────────────────────────
+function renderTareas(){
+  const list=document.getElementById('tareas-list');
+  let filtered=data.tareas;
+  if(tareaFilter!=='todas') filtered=data.tareas.filter(t=>t.estado===tareaFilter||t.resp===tareaFilter);
+  if(!filtered.length){ list.innerHTML='<div class="empty-state"><p>No hay tareas con este filtro.</p></div>'; return; }
+  const rc=r=>r==='Agus'?'ag':r==='Nano'?'na':'ambos';
+  list.innerHTML=filtered.map(t=>{
+    const did='ddt'+t.id;
+    return `
+    <div class="task-row-item">
+      <div class="task-check ${t.estado==='Lista'?'done':''}" onclick="toggleTarea(${t.id})" title="Click para cambiar estado"></div>
+      <div>
+        <div class="task-name ${t.estado==='Lista'?'done':''}">${t.nombre}</div>
+        ${t.notas?`<div class="task-notes-small">${t.notas}</div>`:''}
+      </div>
+      <span class="country-tag">${t.pais||'—'}</span>
+      <span class="resp-tag ${rc(t.resp)}">${t.resp}</span>
+      <span class="date-val ${isUrgent(t.fecha)?'urgent':''}">${formatF(t.fecha)}</span>
+      <div onclick="toggleTarea(${t.id})" style="cursor:pointer;" title="Click para cambiar estado">${badge(t.estado)}</div>
+      <div class="action-menu">
+        <button class="action-btn" onclick="toggleDD('${did}',event)">⋯</button>
+        <div class="dropdown" id="${did}">
+          <div class="dd-item" onclick="openModal('tarea',${t.id});closeAllDD()">✏️ Editar</div>
+          <div class="dd-sep"></div>
+          <div class="dd-item red" onclick="openDel('tarea',${t.id},'¿Eliminar esta tarea?')">🗑 Eliminar</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── RENDER ROADMAP ──────────────────────────────────────────
+function renderRoadmap(){
+  const phases=data.roadmap;
+  const comp=phases.filter(p=>p.estado==='Completada').length;
+  const curso=phases.filter(p=>p.estado==='En curso').length;
+  const avance=phases.length?Math.round(phases.reduce((s,p)=>s+p.pct,0)/phases.length):0;
+  document.getElementById('rm-comp').textContent=comp+' / '+phases.length;
+  document.getElementById('rm-comp-sub').textContent=comp?phases.filter(p=>p.estado==='Completada').map(p=>p.name.split(' ')[0]).join(', '):'ninguna aún';
+  document.getElementById('rm-curso').textContent=curso;
+  document.getElementById('rm-avance').textContent=avance+'%';
+  document.getElementById('rm-total').textContent=phases.length;
+  document.getElementById('rm-total-sub').textContent=phases.filter(p=>p.estado==='Próxima').length+' próximas';
+
+  const dc=e=>e==='Lista'?'green':e==='En curso'?'orange':'gray';
+  const phaseColor=e=>e==='Completada'?'var(--green)':e==='En curso'?'var(--orange)':e==='Bloqueada'?'var(--red)':'var(--text3)';
+
+  document.getElementById('roadmap-list').innerHTML = phases.length
+    ? phases.map((p,idx)=>{
+        const did='ddf'+p.id;
+        const isFirst=idx===0, isLast=idx===phases.length-1;
+        return `
+        <div class="phase-card">
+          <div class="phase-header">
+            <span class="phase-num" style="color:var(--text3);font-family:var(--mono);font-size:11px;width:24px;">${String(idx+1).padStart(2,'0')}</span>
+            <span class="phase-name">${p.name}</span>
+            <div onclick="cycleFaseEstado(${p.id})" style="cursor:pointer;" title="Click para cambiar estado">${badge(p.estado)}</div>
+            <span class="phase-dates">${p.fechas}</span>
+            <span class="phase-pct">${p.pct}%</span>
+            <div style="display:flex;gap:4px;margin-left:8px;">
+              <button class="action-btn" onclick="moverFase(${p.id},'up')" ${isFirst?'disabled':''} title="Subir" style="font-size:13px;padding:2px 6px;${isFirst?'opacity:.3;cursor:default':''}">↑</button>
+              <button class="action-btn" onclick="moverFase(${p.id},'down')" ${isLast?'disabled':''} title="Bajar" style="font-size:13px;padding:2px 6px;${isLast?'opacity:.3;cursor:default':''}">↓</button>
+              <div class="action-menu">
+                <button class="action-btn" onclick="toggleDD('${did}',event)">⋯</button>
+                <div class="dropdown" id="${did}">
+                  <div class="dd-item" onclick="openModal('fase',${p.id});closeAllDD()">✏️ Editar fase</div>
+                  <div class="dd-sep"></div>
+                  <div class="dd-item red" onclick="openDel('fase',${p.id},'¿Eliminar la fase &quot;${p.name}&quot;?')">🗑 Eliminar</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phase-bar"><div class="prog-track"><div class="prog-fill" style="background:${phaseColor(p.estado)};width:${p.pct}%;"></div></div></div>
+          ${p.hitos&&p.hitos.length?`
+          <div class="phase-hitos">${p.hitos.map(h=>`
+            <div class="hito-row">
+              <div class="sdot ${dc(h.e)}" style="cursor:pointer;" onclick="cycleHito(${p.id},${h.id})" title="Click para cambiar estado"></div>
+              <span class="hito-label">${h.l}</span>
+              <span class="hito-resp">${h.r}</span>
+              <div onclick="cycleHito(${p.id},${h.id})" style="cursor:pointer;" title="Click para cambiar estado">${badge(h.e)}</div>
+            </div>`).join('')}
+          </div>`:''}
+        </div>`;
+      }).join('')
+    : '<div class="empty-state"><p>No hay fases. Agregá una con "+ Nueva fase".</p></div>';
+}
+
+// ─── RENDER PROVEEDORES ──────────────────────────────────────
+function renderProveedores(){
+  const list=document.getElementById('proveedores-list');
+  const tot=data.proveedores.length;
+  const cont=data.proveedores.filter(p=>p.estado==='Contactado'||p.estado==='En diálogo').length;
+  const cot=data.proveedores.filter(p=>p.cotizacion&&p.cotizacion!=='—').length;
+  const pend=data.proveedores.filter(p=>p.estado==='Sin contactar').length;
+  const paises=[...new Set(data.proveedores.map(p=>p.pais))];
+  document.getElementById('p-total').textContent=tot;
+  document.getElementById('p-paises').textContent=paises.join(', ')||'—';
+  document.getElementById('p-contactados').textContent=cont;
+  document.getElementById('p-cotizados').textContent=cot;
+  document.getElementById('p-pendientes').textContent=pend;
+  if(!tot){ list.innerHTML='<div class="empty-state"><p>No hay proveedores. Agregá uno.</p></div>'; return; }
+  list.innerHTML=data.proveedores.map(p=>{
+    const did='ddp'+p.id;
+    return `
+    <div class="prov-card">
+      <div class="prov-header">
+        <span class="prov-flag">${p.flag}</span>
+        <div><div class="prov-name">${p.nombre}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text3);">${p.tipo} · ${p.pais}</div></div>
+        <div onclick="cycleProv(${p.id})" style="cursor:pointer;" title="Click para cambiar estado">${badge(p.estado)}</div>
+        <div class="action-menu">
+          <button class="action-btn" onclick="toggleDD('${did}',event)">⋯</button>
+          <div class="dropdown" id="${did}">
+            <div class="dd-item" onclick="openModal('proveedor',${p.id});closeAllDD()">✏️ Editar</div>
+            <div class="dd-sep"></div>
+            <div class="dd-item red" onclick="openDel('proveedor',${p.id},'¿Eliminar ${p.nombre}?')">🗑 Eliminar</div>
+          </div>
+        </div>
+      </div>
+      <div class="prov-body">
+        <div class="pc"><div class="pc-label">Cotización</div><div class="pc-val">${p.cotizacion}</div></div>
+        <div class="pc"><div class="pc-label">Certificaciones</div><div class="pc-val">${p.cert}</div></div>
+        <div class="pc"><div class="pc-label">Lead time</div><div class="pc-val">${p.leadtime}</div></div>
+        <div class="pc"><div class="pc-label">Estado</div><div class="pc-val" style="font-size:12px;color:var(--text2);">${p.estado}</div></div>
+      </div>
+      ${p.notas?`<div class="prov-notes">${p.notas}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ─── RENDER DASHBOARD ────────────────────────────────────────
+function renderDashboard(){
+  // costo total (vuelos + alojamientos)
+  const totalVuelos=data.viajes.reduce((s,v)=>s+(v.vuelo||0),0);
+  const totalAloj=data.alojamientos.reduce((s,a)=>{
+    const n=a.checkin&&a.checkout?diasEntre(a.checkin,a.checkout):0;
+    return s+(a.precio||0)*n;
+  },0);
+  const total=totalVuelos+totalAloj;
+  document.getElementById('dm-costo').textContent='$'+total.toLocaleString();
+  document.getElementById('dm-sub').textContent='$'+Math.round(total/2).toLocaleString()+' por persona';
+
+  const prox=[...data.viajes].sort((a,b)=>new Date(a.inicio)-new Date(b.inicio))[0];
+  if(prox){ document.getElementById('dm-dias').textContent=diasHasta(prox.inicio); document.getElementById('dm-dest').textContent=prox.nombre.split(',')[0]; }
+
+  const pend=data.tareas.filter(t=>t.estado!=='Lista').length;
+  const urg=data.tareas.filter(t=>t.estado!=='Lista'&&isUrgent(t.fecha)).length;
+  document.getElementById('dm-tareas').textContent=pend;
+  document.getElementById('dm-tareas-sub').textContent=urg+' urgentes';
+
+  const cont=data.proveedores.filter(p=>p.estado!=='Sin contactar').length;
+  document.getElementById('dm-provs').textContent=data.proveedores.length;
+  document.getElementById('dm-provs-sub').textContent=cont+' contactados · '+(data.proveedores.length-cont)+' restantes';
+  document.getElementById('dash-tag').textContent=diasHasta('2026-08-12')+' días al lanzamiento';
+
+  // destinos mini
+  document.getElementById('dash-destinos').innerHTML=data.viajes.length?data.viajes.map(v=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--border);">
+      <span style="font-size:18px;">${v.flag}</span>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;color:var(--text);">${v.nombre}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px;">${formatF(v.inicio)} – ${formatF(v.fin)}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--orange);">${v.inicio?diasHasta(v.inicio):'—'}</div>
+        <div style="font-size:10px;color:var(--text3);">días</div>
+      </div>
+    </div>`).join(''):'<div class="empty-state" style="padding:20px;"><p>Sin destinos cargados.</p></div>';
+
+  // roadmap mini
+  document.getElementById('dash-roadmap').innerHTML=data.roadmap.map(p=>`
+    <div class="row-item"><div class="sdot ${p.pct===100?'green':p.pct>0?'orange':'gray'}"></div><span style="font-size:13px;flex:1;">${p.name}</span>${badge(p.estado)}</div>`).join('');
+
+  // tareas urgentes
+  const urgT=data.tareas.filter(t=>t.estado!=='Lista').slice(0,4);
+  const rc=r=>r==='Agus'?'ag':r==='Nano'?'na':'ambos';
+  document.getElementById('dash-tareas').innerHTML=urgT.length?urgT.map(t=>`
+    <div class="row-item">
+      <div class="task-check ${t.estado==='Lista'?'done':''}" onclick="toggleTarea(${t.id})" style="width:16px;height:16px;border-radius:3px;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+      <div style="flex:1;"><div style="font-size:12px;color:var(--text);">${t.nombre}</div><div style="font-size:10px;color:var(--text3);margin-top:1px;">${t.pais} · <span class="resp-tag ${rc(t.resp)}" style="font-size:9px;padding:1px 6px;">${t.resp}</span></div></div>
+    </div>`).join(''):'<div class="empty-state" style="padding:20px;"><p>Todo al día ✓</p></div>';
+
+  // alojamientos mini
+  document.getElementById('dash-aloj').innerHTML=data.alojamientos.slice(0,3).map(a=>{
+    const n=a.checkin&&a.checkout?diasEntre(a.checkin,a.checkout):0;
+    return `
+    <div class="row-item">
+      <span style="font-size:14px;">${{Airbnb:'🏠',Hotel:'🏨',Hostel:'🛏',Departamento:'🏢',Otro:'📍'}[a.tipo]||'📍'}</span>
+      <div style="flex:1;"><div style="font-size:13px;color:var(--text);">${a.nombre}</div><div style="font-size:11px;color:var(--text3);">${getNombreDestino(a.destino_id)} · ${n} noches · $${(a.precio||0)*n}</div></div>
+      ${badge(a.estado)}
+    </div>`;
+  }).join('');
+}
+
+// ─── DATA RESPONSABLES ───────────────────────────────────────
+data.responsables = [
+  { id:301, nombre:'Agus', rol:'Founder', color:'#c8f060' },
+  { id:302, nombre:'Nano', rol:'Founder', color:'#64b5f6' }
+];
+
+// ─── AUTH ─────────────────────────────────────────────────────
+const APP_PW_KEY = 'whynot_pw';
+const APP_SESSION_KEY = 'whynot_session';
+let appPassword = localStorage.getItem(APP_PW_KEY) || 'bali2026';
+
+function doLogin(){
+  const val = document.getElementById('login-pw').value;
+  if(val === appPassword){
+    sessionStorage.setItem(APP_SESSION_KEY, '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('login-error').textContent = '';
+    document.getElementById('login-pw').value = '';
+  } else {
+    document.getElementById('login-error').textContent = 'Clave incorrecta.';
+    document.getElementById('login-pw').value = '';
+    document.getElementById('login-pw').focus();
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem(APP_SESSION_KEY);
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-pw').value = '';
+  document.getElementById('login-error').textContent = '';
+}
+
+function changePw(){
+  const np = document.getElementById('new-pw').value;
+  const cp = document.getElementById('confirm-pw').value;
+  const msg = document.getElementById('pw-msg');
+  if(!np){ msg.style.color='var(--red)'; msg.textContent='Ingresá una clave.'; return; }
+  if(np !== cp){ msg.style.color='var(--red)'; msg.textContent='Las claves no coinciden.'; return; }
+  if(np.length < 4){ msg.style.color='var(--red)'; msg.textContent='Mínimo 4 caracteres.'; return; }
+  appPassword = np;
+  localStorage.setItem(APP_PW_KEY, np);
+  document.getElementById('new-pw').value = '';
+  document.getElementById('confirm-pw').value = '';
+  msg.style.color='var(--green)'; msg.textContent='Clave actualizada ✓';
+  setTimeout(()=>msg.textContent='', 3000);
+}
+
+// Verificar sesión al cargar
+if(!sessionStorage.getItem(APP_SESSION_KEY)){
+  document.getElementById('login-screen').style.display = 'flex';
+} else {
+  document.getElementById('login-screen').style.display = 'none';
+}
+
+// ─── RESPONSABLES MODAL ───────────────────────────────────────
+let selectedColor = '#c8f060';
+
+function selectColor(hex, el){
+  selectedColor = hex;
+  document.getElementById('r-color').value = hex;
+  document.querySelectorAll('.color-opt').forEach(o => o.style.borderColor = 'transparent');
+  if(el) el.style.borderColor = 'white';
+}
+
+function openModal_resp_extra(id){
+  document.getElementById('modal-resp-title').textContent = id ? 'Editar responsable' : 'Nuevo responsable';
+  const r = id ? data.responsables.find(x=>x.id===id) : {};
+  document.getElementById('r-nombre').value = r.nombre||'';
+  document.getElementById('r-rol').value = r.rol||'';
+  selectedColor = r.color||'#c8f060';
+  document.getElementById('r-color').value = selectedColor;
+  document.querySelectorAll('.color-opt').forEach(o => {
+    o.style.borderColor = o.dataset.color === selectedColor ? 'white' : 'transparent';
+  });
+  document.getElementById('modal-resp').classList.add('open');
+}
+
+function saveResp(){
+  const obj = { id: editingId||uid(), nombre: document.getElementById('r-nombre').value.trim(), rol: document.getElementById('r-rol').value.trim(), color: document.getElementById('r-color').value||selectedColor };
+  if(!obj.nombre) return;
+  if(editingId){ const i=data.responsables.findIndex(x=>x.id===editingId); data.responsables[i]=obj; }
+  else data.responsables.push(obj);
+  closeModal('resp');
+  renderConfig();
+  updateRespSelects();
+}
+
+function renderConfig(){
+  const list = document.getElementById('config-resp-list');
+  if(!list) return;
+  if(!data.responsables.length){ list.innerHTML='<div class="empty-state"><p>No hay responsables. Agregá uno.</p></div>'; return; }
+  list.innerHTML = data.responsables.map(r => {
+    const did = 'ddr'+r.id;
+    return `
+    <div style="display:grid;grid-template-columns:40px 1fr 140px 120px 80px;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .1s;" onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background='transparent'">
+      <div style="width:30px;height:30px;border-radius:50%;background:${r.color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0a1a0e;">${r.nombre.slice(0,2).toUpperCase()}</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);">${r.nombre}</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);">${r.rol}</div>
+      <div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:50%;background:${r.color};flex-shrink:0;"></div><span style="font-family:var(--mono);font-size:11px;color:var(--text3);">${r.color}</span></div>
+      <div class="action-menu" style="justify-content:flex-end;">
+        <button class="action-btn" onclick="toggleDD('${did}',event)">⋯</button>
+        <div class="dropdown" id="${did}">
+          <div class="dd-item" onclick="editingId=${r.id};openModal_resp_extra(${r.id});closeAllDD()">✏️ Editar</div>
+          <div class="dd-sep"></div>
+          <div class="dd-item red" onclick="openDel('resp',${r.id},'¿Eliminar a ${r.nombre}?')">🗑 Eliminar</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateRespSelects(){
+  // actualiza todos los selects de responsable en modales abiertos
+  const opts = data.responsables.map(r=>`<option>${r.nombre}</option>`).join('');
+  ['t-resp'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=opts; });
+}
+
+// ─── RENDER RESP PILL (reemplaza resp-tag hardcodeado) ────────
+function respPill(nombre){
+  const r = data.responsables.find(x=>x.nombre===nombre);
+  if(!r) return `<span class="resp-tag">${nombre}</span>`;
+  const bg = r.color+'22';
+  return `<span class="resp-pill" style="background:${bg};color:${r.color};border-color:${r.color}44;"><span class="resp-pill-dot" style="background:${r.color};"></span>${r.nombre}</span>`;
+}
+
+// override openModal para resp
+const _origOpenModal = openModal;
+function openModal(type, id=null){
+  if(type==='resp'){ editingId=id; openModal_resp_extra(id); return; }
+  _origOpenModal(type, id);
+}
+
+// override confirmDelete para resp
+const _origConfirmDelete = confirmDelete;
+function confirmDelete(){
+  if(deletePending.type==='resp'){
+    data.responsables = data.responsables.filter(x=>x.id!==deletePending.id);
+    closeModal('confirm'); renderConfig(); updateRespSelects(); return;
+  }
+  _origConfirmDelete();
+}
+
+// ─── RENDER ALL (extendido) ───────────────────────────────────
+function renderAll(){ renderDashboard(); renderViajes(); renderAlojamientos(); renderTareas(); renderRoadmap(); renderProveedores(); renderConfig(); updateRespSelects(); }
+
+renderAll();
+</script>
+</body>
+</html>
