@@ -606,59 +606,79 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 </div>
 
 <script>
-// ─── DATA ────────────────────────────────────────────────────
-let data = {
-  viajes: [
-    { id:1, nombre:'Barcelona, España', flag:'🇪🇸', inicio:'2026-07-01', fin:'2026-08-01', mision:'Operaciones remotas + marca + legal', color:'mp-green', vuelo:1200, estado_vuelo:'Comprado', progreso:75 },
-    { id:2, nombre:'Asia — China · Singapur · Tailandia', flag:'🌏', inicio:'2026-08-01', fin:'2026-08-12', mision:'Visitar fábricas y cerrar proveedor', color:'mp-orange', vuelo:1800, estado_vuelo:'Cotizado', progreso:20 },
-    { id:3, nombre:'Bali, Indonesia', flag:'🇮🇩', inicio:'2026-08-12', fin:'2026-08-30', mision:'Preparar y ejecutar lanzamiento WHYnot', color:'mp-purple', vuelo:420, estado_vuelo:'Sin cotizar', progreso:5 }
-  ],
-  alojamientos: [
-    { id:1, nombre:'Airbnb Gracia', destino_id:1, tipo:'Airbnb', checkin:'2026-07-01', checkout:'2026-07-31', precio:85, estado:'Reservado', notas:'Barrio Gracia, Barcelona. 2 habitaciones, patio.' },
-    { id:2, nombre:'Airbnb Shanghai Centro', destino_id:2, tipo:'Airbnb', checkin:'2026-08-01', checkout:'2026-08-05', precio:55, estado:'Sin reservar', notas:'Zona French Concession. Buscar cerca del metro.' },
-    { id:3, nombre:'Hotel Singapur', destino_id:2, tipo:'Hotel', checkin:'2026-08-05', checkout:'2026-08-09', precio:90, estado:'Buscando', notas:'Presupuesto máx $100/noche. Zona CBD.' },
-    { id:4, nombre:'Hostel Bangkok', destino_id:2, tipo:'Hostel', checkin:'2026-08-09', checkout:'2026-08-12', precio:30, estado:'Sin reservar', notas:'Solo 3 noches. Privado si es posible.' },
-    { id:5, nombre:'Villa Canggu', destino_id:3, tipo:'Airbnb', checkin:'2026-08-12', checkout:'2026-08-30', precio:70, estado:'Sin reservar', notas:'Canggu o Seminyak. Con piscina para el lanzamiento.' }
-  ],
-  tareas: [
-    { id:1, nombre:'Contactar estudio de patentes', notas:'Inicio del proceso de registro', pais:'Legal', resp:'Agus', fecha:'2026-04-20', estado:'En curso' },
-    { id:2, nombre:'Lista de fábricas en China', notas:'Mínimo 5 opciones con contacto', pais:'China', resp:'Nano', fecha:'2026-04-30', estado:'Pendiente' },
-    { id:3, nombre:'Cotizar y comprar vuelos Barcelona', notas:'Salida 1 de julio', pais:'España', resp:'Ambos', fecha:'2026-04-25', estado:'Pendiente' },
-    { id:4, nombre:'Investigar regulaciones para condones en Bali', notas:'Importación, venta, requisitos sanitarios', pais:'Bali', resp:'Nano', fecha:'2026-05-15', estado:'Pendiente' },
-    { id:5, nombre:'Reservar airbnbs para Asia', notas:'Shanghai, Singapur, Bangkok', pais:'Asia', resp:'Ambos', fecha:'2026-06-01', estado:'Pendiente' },
-    { id:6, nombre:'Armar deck para fábricas', notas:'Quiénes somos, volumen estimado, marca', pais:'Asia', resp:'Agus', fecha:'2026-06-15', estado:'Pendiente' },
-    { id:7, nombre:'Definir nombre legal de la marca', notas:'WHYnot International', pais:'Legal', resp:'Agus', fecha:'2026-04-10', estado:'Lista' },
-    { id:8, nombre:'Confirmar branding y paleta', notas:'Logo, colores, tipografías', pais:'Marca', resp:'Ambos', fecha:'2026-04-01', estado:'Lista' }
-  ],
-  proveedores: [
-    { id:1, nombre:'Guangzhou LatexTech Co.', flag:'🇨🇳', pais:'China', tipo:'Fábrica', cotizacion:'$0,08 / u', leadtime:'45 días', cert:'ISO 4074, CE', estado:'En diálogo', notas:'Interesados en sampling primero. Piden MOU antes de cotización final.' },
-    { id:2, nombre:'Singapore MedPackage Pte.', flag:'🇸🇬', pais:'Singapur', tipo:'Distribuidor', cotizacion:'—', leadtime:'—', cert:'ISO 13485', estado:'Sin contactar', notas:'Red en todo el sudeste asiático.' },
-    { id:3, nombre:'Bangkok ProCondom Co.', flag:'🇹🇭', pais:'Tailandia', tipo:'Fábrica', cotizacion:'—', leadtime:'—', cert:'ISO 4074', estado:'Sin contactar', notas:'Encontrado en Alibaba. Visitar en el tramo Tailandia.' },
-    { id:4, nombre:'Qingdao SafeGuard Latex', flag:'🇨🇳', pais:'China', tipo:'Fábrica', cotizacion:'—', leadtime:'—', cert:'ISO 4074, CE', estado:'Sin contactar', notas:'Especialistas en packaging personalizado para marcas boutique.' }
-  ]
+// ─── SUPABASE ─────────────────────────────────────────────────
+const SB_URL = 'https://advidtgrgswjixhurgak.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkdmlkdGdyZ3N3aml4aHVyZ2FrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNzc5NDEsImV4cCI6MjA5MTg1Mzk0MX0.Oj_xb6A7O9JPNKJbB1Ov1xN1xE7j1FyFHNC7hLcTDBE';
+
+const sbHeaders = {
+  'apikey': SB_KEY,
+  'Authorization': 'Bearer ' + SB_KEY,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
 };
+
+async function sbGet(table, params=''){
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, { headers: sbHeaders });
+  if(!r.ok) throw new Error(`GET ${table} failed: ${r.status}`);
+  return r.json();
+}
+
+async function sbInsert(table, body){
+  const r = await fetch(`${SB_URL}/rest/v1/${table}`, { method:'POST', headers: sbHeaders, body: JSON.stringify(body) });
+  if(!r.ok) throw new Error(`INSERT ${table} failed: ${r.status}`);
+  return r.json();
+}
+
+async function sbUpdate(table, id, body){
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, { method:'PATCH', headers: sbHeaders, body: JSON.stringify(body) });
+  if(!r.ok) throw new Error(`UPDATE ${table} failed: ${r.status}`);
+  return r.json();
+}
+
+async function sbDelete(table, id){
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, { method:'DELETE', headers: sbHeaders });
+  if(!r.ok) throw new Error(`DELETE ${table} failed: ${r.status}`);
+}
+
+// ─── DATA (caché local) ───────────────────────────────────────
+let data = { viajes:[], alojamientos:[], tareas:[], proveedores:[], roadmap:[], responsables:[] };
+let loading = false;
+
+function showLoading(msg='Cargando...'){
+  let el=document.getElementById('global-loader');
+  if(!el){ el=document.createElement('div'); el.id='global-loader'; el.style.cssText='position:fixed;bottom:24px;right:24px;background:#1f3023;border:1px solid rgba(200,240,96,.2);color:var(--lime);font-family:var(--mono);font-size:12px;padding:10px 18px;border-radius:10px;z-index:500;'; document.body.appendChild(el); }
+  el.textContent=msg; el.style.display='block';
+}
+function hideLoading(){ const el=document.getElementById('global-loader'); if(el) el.style.display='none'; }
+function showError(msg){ showLoading('⚠ '+msg); setTimeout(hideLoading,3000); }
+
+async function loadAll(){
+  showLoading('Cargando datos...');
+  try {
+    const [viajes, aloj, tareas, provs, fases, hitos, resps] = await Promise.all([
+      sbGet('viajes','order=created_at.asc'),
+      sbGet('alojamientos','order=checkin.asc'),
+      sbGet('tareas','order=created_at.asc'),
+      sbGet('proveedores','order=created_at.asc'),
+      sbGet('roadmap','order=orden.asc'),
+      sbGet('hitos','order=created_at.asc'),
+      sbGet('responsables','order=created_at.asc')
+    ]);
+    data.viajes = viajes;
+    data.alojamientos = aloj;
+    data.tareas = tareas;
+    data.proveedores = provs;
+    data.roadmap = fases.map(f=>({ ...f, name:f.nombre, hitos: hitos.filter(h=>h.fase_id===f.id).map(h=>({id:h.id,l:h.label,r:h.responsable,e:h.estado})) }));
+    data.responsables = resps;
+    hideLoading();
+    renderAll();
+  } catch(e){
+    showError('Error al cargar: '+e.message);
+  }
+}
 
 let editingId = null, editingType = null, alojFilter = 'todos', tareaFilter = 'todas';
 let deletePending = { type:null, id:null };
-
-// ─── DATA ROADMAP (ahora editable) ───────────────────────────
-data.roadmap = [
-  { id:101, orden:1, name:'Branding e identidad', estado:'Completada', fechas:'ene – feb 2026', pct:100, hitos:[
-    {id:201,l:'Nombre de marca definido',r:'Ambos',e:'Lista'},{id:202,l:'Logo y paleta de colores',r:'Agus',e:'Lista'},{id:203,l:'Tipografías y guía de marca',r:'Agus',e:'Lista'}
-  ]},
-  { id:102, orden:2, name:'Legal y patentamiento', estado:'En curso', fechas:'mar – may 2026', pct:30, hitos:[
-    {id:204,l:'Nombre legal definido',r:'Agus',e:'Lista'},{id:205,l:'Contactar estudio de patentes',r:'Agus',e:'En curso'},{id:206,l:'Presentar solicitud de registro',r:'Agus',e:'Pendiente'},{id:207,l:'Definir país de constitución',r:'Ambos',e:'Pendiente'}
-  ]},
-  { id:103, orden:3, name:'Búsqueda y cierre de proveedor', estado:'En curso', fechas:'abr – jul 2026', pct:10, hitos:[
-    {id:208,l:'Lista de fábricas Asia (5+)',r:'Nano',e:'En curso'},{id:209,l:'Primer contacto con fábricas',r:'Ambos',e:'Pendiente'},{id:210,l:'Visita presencial en Asia',r:'Ambos',e:'Pendiente'},{id:211,l:'Cerrar acuerdo con proveedor',r:'Ambos',e:'Pendiente'}
-  ]},
-  { id:104, orden:4, name:'Producción primer lote', estado:'Próxima', fechas:'ago – sep 2026', pct:0, hitos:[
-    {id:212,l:'Definir tamaño del lote',r:'Ambos',e:'Pendiente'},{id:213,l:'Pagar adelanto a fábrica',r:'Ambos',e:'Pendiente'},{id:214,l:'Confirmar packaging y diseño',r:'Agus',e:'Pendiente'}
-  ]},
-  { id:105, orden:5, name:'Lanzamiento en Bali', estado:'Próxima', fechas:'ago 12–30 · 2026', pct:0, hitos:[
-    {id:215,l:'Definir estrategia de lanzamiento',r:'Ambos',e:'Pendiente'},{id:216,l:'Primeros 500 clientes / puntos de venta',r:'Ambos',e:'Pendiente'},{id:217,l:'Evento / activación en Bali',r:'Ambos',e:'Pendiente'}
-  ]}
-];
 
 // ─── UTILS ───────────────────────────────────────────────────
 function uid(){ return Date.now() + Math.floor(Math.random()*9999); }
@@ -769,43 +789,64 @@ function closeModal(type){ document.getElementById('modal-'+type).classList.remo
 
 function openDel(type,id,msg){ deletePending={type,id}; document.getElementById('confirm-msg').textContent=msg||'Esta acción no se puede deshacer.'; document.getElementById('modal-confirm').classList.add('open'); }
 
-function confirmDelete(){
+async function confirmDelete(){
   const {type,id}=deletePending;
-  if(type==='viaje') data.viajes=data.viajes.filter(x=>x.id!==id);
-  if(type==='aloj') data.alojamientos=data.alojamientos.filter(x=>x.id!==id);
-  if(type==='tarea') data.tareas=data.tareas.filter(x=>x.id!==id);
-  if(type==='proveedor') data.proveedores=data.proveedores.filter(x=>x.id!==id);
-  if(type==='fase'){ data.roadmap=data.roadmap.filter(x=>x.id!==id); recalcOrden(); }
-  closeModal('confirm'); renderAll();
+  showLoading('Eliminando...');
+  try {
+    if(type==='viaje') await sbDelete('viajes', id);
+    if(type==='aloj') await sbDelete('alojamientos', id);
+    if(type==='tarea') await sbDelete('tareas', id);
+    if(type==='proveedor') await sbDelete('proveedores', id);
+    if(type==='fase'){
+      await fetch(`${SB_URL}/rest/v1/hitos?fase_id=eq.${id}`, { method:'DELETE', headers: sbHeaders });
+      await sbDelete('roadmap', id);
+    }
+    if(type==='resp') await sbDelete('responsables', id);
+    closeModal('confirm'); await loadAll();
+  } catch(e){ showError('Error: '+e.message); }
 }
 
 // ─── SAVE ────────────────────────────────────────────────────
-function saveViaje(){
-  const obj={ id:editingId||uid(), nombre:document.getElementById('v-nombre').value, flag:document.getElementById('v-flag').value||'✈️', inicio:document.getElementById('v-inicio').value, fin:document.getElementById('v-fin').value, mision:document.getElementById('v-mision').value, color:document.getElementById('v-color').value, vuelo:parseFloat(document.getElementById('v-vuelo').value)||0, estado_vuelo:document.getElementById('v-estado-vuelo').value, progreso:parseInt(document.getElementById('v-progreso').value)||0 };
-  if(editingId){ const i=data.viajes.findIndex(x=>x.id===editingId); data.viajes[i]=obj; } else data.viajes.push(obj);
-  closeModal('viaje'); renderAll();
+async function saveViaje(){
+  const obj = { nombre:document.getElementById('v-nombre').value, flag:document.getElementById('v-flag').value||'✈️', inicio:document.getElementById('v-inicio').value||null, fin:document.getElementById('v-fin').value||null, mision:document.getElementById('v-mision').value, color:document.getElementById('v-color').value, vuelo:parseFloat(document.getElementById('v-vuelo').value)||0, estado_vuelo:document.getElementById('v-estado-vuelo').value, progreso:parseInt(document.getElementById('v-progreso').value)||0 };
+  showLoading('Guardando...');
+  try {
+    if(editingId) await sbUpdate('viajes', editingId, obj);
+    else await sbInsert('viajes', obj);
+    closeModal('viaje'); await loadAll();
+  } catch(e){ showError('Error: '+e.message); }
 }
 
-function saveAloj(){
+async function saveAloj(){
   const checkin=document.getElementById('a-checkin').value;
   const checkout=document.getElementById('a-checkout').value;
-  const precio=parseFloat(document.getElementById('a-precio').value)||0;
-  const noches=checkin&&checkout?diasEntre(checkin,checkout):0;
-  const obj={ id:editingId||uid(), nombre:document.getElementById('a-nombre').value, destino_id:parseInt(document.getElementById('a-destino').value), tipo:document.getElementById('a-tipo').value, checkin, checkout, precio, noches, total:precio*noches, estado:document.getElementById('a-estado').value, notas:document.getElementById('a-notas').value };
-  if(editingId){ const i=data.alojamientos.findIndex(x=>x.id===editingId); data.alojamientos[i]=obj; } else data.alojamientos.push(obj);
-  closeModal('aloj'); renderAll();
+  const obj = { nombre:document.getElementById('a-nombre').value, destino_id:parseInt(document.getElementById('a-destino').value), tipo:document.getElementById('a-tipo').value, checkin:checkin||null, checkout:checkout||null, precio:parseFloat(document.getElementById('a-precio').value)||0, estado:document.getElementById('a-estado').value, notas:document.getElementById('a-notas').value };
+  showLoading('Guardando...');
+  try {
+    if(editingId) await sbUpdate('alojamientos', editingId, obj);
+    else await sbInsert('alojamientos', obj);
+    closeModal('aloj'); await loadAll();
+  } catch(e){ showError('Error: '+e.message); }
 }
 
-function saveTarea(){
-  const obj={ id:editingId||uid(), nombre:document.getElementById('t-nombre').value, notas:document.getElementById('t-notas').value, pais:document.getElementById('t-pais').value, resp:document.getElementById('t-resp').value, fecha:document.getElementById('t-fecha').value, estado:document.getElementById('t-estado').value };
-  if(editingId){ const i=data.tareas.findIndex(x=>x.id===editingId); data.tareas[i]=obj; } else data.tareas.push(obj);
-  closeModal('tarea'); renderAll();
+async function saveTarea(){
+  const obj = { nombre:document.getElementById('t-nombre').value, notas:document.getElementById('t-notas').value, pais:document.getElementById('t-pais').value, resp:document.getElementById('t-resp').value, fecha:document.getElementById('t-fecha').value||null, estado:document.getElementById('t-estado').value };
+  showLoading('Guardando...');
+  try {
+    if(editingId) await sbUpdate('tareas', editingId, obj);
+    else await sbInsert('tareas', obj);
+    closeModal('tarea'); await loadAll();
+  } catch(e){ showError('Error: '+e.message); }
 }
 
-function saveProveedor(){
-  const obj={ id:editingId||uid(), nombre:document.getElementById('p-nombre').value, flag:document.getElementById('p-flag').value||'🌐', pais:document.getElementById('p-pais').value, tipo:document.getElementById('p-tipo').value, cotizacion:document.getElementById('p-cotizacion').value||'—', leadtime:document.getElementById('p-leadtime').value||'—', cert:document.getElementById('p-cert').value||'—', estado:document.getElementById('p-estado').value, notas:document.getElementById('p-notas').value };
-  if(editingId){ const i=data.proveedores.findIndex(x=>x.id===editingId); data.proveedores[i]=obj; } else data.proveedores.push(obj);
-  closeModal('proveedor'); renderAll();
+async function saveProveedor(){
+  const obj = { nombre:document.getElementById('p-nombre').value, flag:document.getElementById('p-flag').value||'🌐', pais:document.getElementById('p-pais').value, tipo:document.getElementById('p-tipo').value, cotizacion:document.getElementById('p-cotizacion').value||'—', leadtime:document.getElementById('p-leadtime').value||'—', cert:document.getElementById('p-cert').value||'—', estado:document.getElementById('p-estado').value, notas:document.getElementById('p-notas').value };
+  showLoading('Guardando...');
+  try {
+    if(editingId) await sbUpdate('proveedores', editingId, obj);
+    else await sbInsert('proveedores', obj);
+    closeModal('proveedor'); await loadAll();
+  } catch(e){ showError('Error: '+e.message); }
 }
 
 function addHitoRow(l='', r='Ambos', e='Pendiente'){
@@ -827,67 +868,109 @@ function addHitoRow(l='', r='Ambos', e='Pendiente'){
   c.appendChild(div);
 }
 
-function saveFase(){
+async function saveFase(){
   const rows=document.getElementById('hitos-container').children;
   const hitos=Array.from(rows).map(row=>{
     const inputs=row.querySelectorAll('input,select');
-    return { id:uid(), l:inputs[0].value.trim()||'Hito', r:inputs[1].value, e:inputs[2].value };
-  }).filter(h=>h.l&&h.l!=='Hito'||h.l==='Hito');
+    return { l:inputs[0].value.trim(), r:inputs[1].value, e:inputs[2].value };
+  }).filter(h=>h.l);
   const maxOrden=data.roadmap.length?Math.max(...data.roadmap.map(x=>x.orden)):0;
-  const obj={
-    id:editingId||uid(),
-    orden:editingId?(data.roadmap.find(x=>x.id===editingId)||{}).orden||maxOrden+1:maxOrden+1,
-    name:document.getElementById('f-nombre').value,
-    fechas:document.getElementById('f-fechas').value,
-    estado:document.getElementById('f-estado').value,
-    pct:parseInt(document.getElementById('f-pct').value)||0,
-    hitos
-  };
-  if(editingId){ const i=data.roadmap.findIndex(x=>x.id===editingId); data.roadmap[i]=obj; }
-  else data.roadmap.push(obj);
-  data.roadmap.sort((a,b)=>a.orden-b.orden);
-  closeModal('fase'); renderAll();
+  const faseObj = { nombre:document.getElementById('f-nombre').value, fechas:document.getElementById('f-fechas').value, estado:document.getElementById('f-estado').value, pct:parseInt(document.getElementById('f-pct').value)||0, orden: editingId?(data.roadmap.find(x=>x.id===editingId)||{}).orden||maxOrden+1 : maxOrden+1 };
+  showLoading('Guardando...');
+  try {
+    let faseId = editingId;
+    if(editingId){
+      await sbUpdate('roadmap', editingId, faseObj);
+      await sbDelete('hitos_by_fase', editingId); // borra hitos viejos via RPC o filter
+      // borrar hitos de esta fase
+      await fetch(`${SB_URL}/rest/v1/hitos?fase_id=eq.${editingId}`, { method:'DELETE', headers: sbHeaders });
+    } else {
+      const res = await sbInsert('roadmap', faseObj);
+      faseId = res[0].id;
+    }
+    // insertar hitos nuevos
+    if(hitos.length){
+      await sbInsert('hitos', hitos.map(h=>({ fase_id:faseId, label:h.l, responsable:h.r, estado:h.e })));
+    }
+    closeModal('fase'); await loadAll();
+  } catch(e){ showError('Error: '+e.message); }
 }
 
 function recalcOrden(){
   data.roadmap.sort((a,b)=>a.orden-b.orden).forEach((f,i)=>f.orden=i+1);
 }
 
-function moverFase(id, dir){
-  const idx=data.roadmap.findIndex(x=>x.id===id);
+async function moverFase(id, dir){
+  const sorted=[...data.roadmap].sort((a,b)=>a.orden-b.orden);
+  const idx=sorted.findIndex(x=>x.id===id);
   const swap=dir==='up'?idx-1:idx+1;
-  if(swap<0||swap>=data.roadmap.length) return;
-  [data.roadmap[idx].orden, data.roadmap[swap].orden]=[data.roadmap[swap].orden, data.roadmap[idx].orden];
+  if(swap<0||swap>=sorted.length) return;
+  const a=sorted[idx], b=sorted[swap];
+  [a.orden,b.orden]=[b.orden,a.orden];
   data.roadmap.sort((a,b)=>a.orden-b.orden);
   renderRoadmap();
+  try { await Promise.all([sbUpdate('roadmap',a.id,{orden:a.orden}),sbUpdate('roadmap',b.id,{orden:b.orden})]); }
+  catch(e){ showError('Error: '+e.message); await loadAll(); }
 }
 
-function cycleFaseEstado(id){
+async function cycleFaseEstado(id){
   const f=data.roadmap.find(x=>x.id===id); if(!f) return;
   const opts=['Próxima','En curso','Completada','Bloqueada'];
-  f.estado=opts[(opts.indexOf(f.estado)+1)%opts.length];
-  renderAll();
+  const next=opts[(opts.indexOf(f.estado)+1)%opts.length];
+  f.estado=next; renderAll();
+  try { await sbUpdate('roadmap',id,{estado:next}); }
+  catch(e){ showError('Error: '+e.message); await loadAll(); }
 }
 
-function cycleHito(faseId, hitoId){
+async function cycleHito(faseId, hitoId){
   const f=data.roadmap.find(x=>x.id===faseId); if(!f) return;
   const h=f.hitos.find(x=>x.id===hitoId); if(!h) return;
   const opts=['Pendiente','En curso','Lista'];
-  h.e=opts[(opts.indexOf(h.e)+1)%opts.length];
-  // auto-recalc pct
-  const total=f.hitos.length;
+  const next=opts[(opts.indexOf(h.e)+1)%opts.length];
+  h.e=next;
   const listas=f.hitos.filter(x=>x.e==='Lista').length;
-  f.pct=total?Math.round(listas/total*100):0;
+  f.pct=f.hitos.length?Math.round(listas/f.hitos.length*100):0;
   if(f.pct===100) f.estado='Completada';
   else if(f.pct>0) f.estado='En curso';
   renderAll();
+  try {
+    await sbUpdate('hitos',hitoId,{estado:next});
+    await sbUpdate('roadmap',faseId,{pct:f.pct,estado:f.estado});
+  } catch(e){ showError('Error: '+e.message); await loadAll(); }
 }
 
 // ─── QUICK STATE ─────────────────────────────────────────────
-function cycleViaje(id,field,opts){ const v=data.viajes.find(x=>x.id===id); if(!v)return; v[field]=opts[(opts.indexOf(v[field])+1)%opts.length]; renderAll(); }
-function cycleAloj(id){ const a=data.alojamientos.find(x=>x.id===id); if(!a)return; const opts=['Sin reservar','Buscando','Reservado','Pagado']; a.estado=opts[(opts.indexOf(a.estado)+1)%opts.length]; renderAll(); }
-function cycleProv(id){ const p=data.proveedores.find(x=>x.id===id); if(!p)return; const opts=['Sin contactar','Contactado','En diálogo','Descartado']; p.estado=opts[(opts.indexOf(p.estado)+1)%opts.length]; renderAll(); }
-function toggleTarea(id){ const t=data.tareas.find(x=>x.id===id); if(!t)return; const c=['Pendiente','En curso','Lista']; t.estado=c[(c.indexOf(t.estado)+1)%c.length]; renderAll(); }
+async function cycleViaje(id,field,opts){
+  const v=data.viajes.find(x=>x.id===id); if(!v) return;
+  const next=opts[(opts.indexOf(v[field])+1)%opts.length];
+  v[field]=next; renderAll();
+  try { await sbUpdate('viajes',id,{[field]:next}); }
+  catch(e){ showError('Error: '+e.message); await loadAll(); }
+}
+async function cycleAloj(id){
+  const a=data.alojamientos.find(x=>x.id===id); if(!a) return;
+  const opts=['Sin reservar','Buscando','Reservado','Pagado'];
+  const next=opts[(opts.indexOf(a.estado)+1)%opts.length];
+  a.estado=next; renderAll();
+  try { await sbUpdate('alojamientos',id,{estado:next}); }
+  catch(e){ showError('Error: '+e.message); await loadAll(); }
+}
+async function cycleProv(id){
+  const p=data.proveedores.find(x=>x.id===id); if(!p) return;
+  const opts=['Sin contactar','Contactado','En diálogo','Descartado'];
+  const next=opts[(opts.indexOf(p.estado)+1)%opts.length];
+  p.estado=next; renderAll();
+  try { await sbUpdate('proveedores',id,{estado:next}); }
+  catch(e){ showError('Error: '+e.message); await loadAll(); }
+}
+async function toggleTarea(id){
+  const t=data.tareas.find(x=>x.id===id); if(!t) return;
+  const c=['Pendiente','En curso','Lista'];
+  const next=c[(c.indexOf(t.estado)+1)%c.length];
+  t.estado=next; renderAll();
+  try { await sbUpdate('tareas',id,{estado:next}); }
+  catch(e){ showError('Error: '+e.message); await loadAll(); }
+}
 
 // ─── FILTERS ─────────────────────────────────────────────────
 function filterAloj(f,btn){
@@ -1230,12 +1313,6 @@ function renderDashboard(){
   }).join('');
 }
 
-// ─── DATA RESPONSABLES ───────────────────────────────────────
-data.responsables = [
-  { id:301, nombre:'Agus', rol:'Founder', color:'#c8f060' },
-  { id:302, nombre:'Nano', rol:'Founder', color:'#64b5f6' }
-];
-
 // ─── AUTH ─────────────────────────────────────────────────────
 const APP_PW_KEY = 'whynot_pw';
 const APP_SESSION_KEY = 'whynot_session';
@@ -1248,6 +1325,7 @@ function doLogin(){
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('login-error').textContent = '';
     document.getElementById('login-pw').value = '';
+    loadAll();
   } else {
     document.getElementById('login-error').textContent = 'Clave incorrecta.';
     document.getElementById('login-pw').value = '';
@@ -1278,10 +1356,11 @@ function changePw(){
 }
 
 // Verificar sesión al cargar
-if(!sessionStorage.getItem(APP_SESSION_KEY)){
-  document.getElementById('login-screen').style.display = 'flex';
-} else {
+if(sessionStorage.getItem(APP_SESSION_KEY)){
   document.getElementById('login-screen').style.display = 'none';
+  loadAll();
+} else {
+  document.getElementById('login-screen').style.display = 'flex';
 }
 
 // ─── RESPONSABLES MODAL ───────────────────────────────────────
@@ -1307,14 +1386,15 @@ function openModal_resp_extra(id){
   document.getElementById('modal-resp').classList.add('open');
 }
 
-function saveResp(){
-  const obj = { id: editingId||uid(), nombre: document.getElementById('r-nombre').value.trim(), rol: document.getElementById('r-rol').value.trim(), color: document.getElementById('r-color').value||selectedColor };
+async function saveResp(){
+  const obj = { nombre: document.getElementById('r-nombre').value.trim(), rol: document.getElementById('r-rol').value.trim(), color: document.getElementById('r-color').value||selectedColor };
   if(!obj.nombre) return;
-  if(editingId){ const i=data.responsables.findIndex(x=>x.id===editingId); data.responsables[i]=obj; }
-  else data.responsables.push(obj);
-  closeModal('resp');
-  renderConfig();
-  updateRespSelects();
+  showLoading('Guardando...');
+  try {
+    if(editingId) await sbUpdate('responsables', editingId, obj);
+    else await sbInsert('responsables', obj);
+    closeModal('resp'); await loadAll();
+  } catch(e){ showError('Error: '+e.message); }
 }
 
 function renderConfig(){
@@ -1342,12 +1422,10 @@ function renderConfig(){
 }
 
 function updateRespSelects(){
-  // actualiza todos los selects de responsable en modales abiertos
   const opts = data.responsables.map(r=>`<option>${r.nombre}</option>`).join('');
   ['t-resp'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=opts; });
 }
 
-// ─── RENDER RESP PILL (reemplaza resp-tag hardcodeado) ────────
 function respPill(nombre){
   const r = data.responsables.find(x=>x.nombre===nombre);
   if(!r) return `<span class="resp-tag">${nombre}</span>`;
@@ -1355,27 +1433,16 @@ function respPill(nombre){
   return `<span class="resp-pill" style="background:${bg};color:${r.color};border-color:${r.color}44;"><span class="resp-pill-dot" style="background:${r.color};"></span>${r.nombre}</span>`;
 }
 
-// override openModal para resp
+// openModal wrapper para resp
 const _origOpenModal = openModal;
 function openModal(type, id=null){
   if(type==='resp'){ editingId=id; openModal_resp_extra(id); return; }
   _origOpenModal(type, id);
 }
 
-// override confirmDelete para resp
-const _origConfirmDelete = confirmDelete;
-function confirmDelete(){
-  if(deletePending.type==='resp'){
-    data.responsables = data.responsables.filter(x=>x.id!==deletePending.id);
-    closeModal('confirm'); renderConfig(); updateRespSelects(); return;
-  }
-  _origConfirmDelete();
-}
-
-// ─── RENDER ALL (extendido) ───────────────────────────────────
+// ─── RENDER ALL ───────────────────────────────────────────────
 function renderAll(){ renderDashboard(); renderViajes(); renderAlojamientos(); renderTareas(); renderRoadmap(); renderProveedores(); renderConfig(); updateRespSelects(); }
 
-renderAll();
 </script>
 </body>
 </html>
